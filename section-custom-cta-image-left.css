@@ -1,0 +1,194 @@
+/* section-custom-cta-image-left.css */
+
+.custom-cta-section {
+  position: relative; /* For overlay positioning */
+  background-size: cover;
+  background-position: center center; /* Explicitly center both ways */
+  background-repeat: no-repeat;
+  min-height: var(--cta-section-height, 60vh); /* Default height, controlled by schema */
+  display: flex; /* Using flex to align content wrapper */
+  color: #ffffff; /* Default text color for content within this section */
+  box-sizing: border-box;
+  background-image: var(--cta-desktop-image); /* Default to desktop image, set via inline style from Liquid */
+}
+
+.custom-cta__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000000; /* Overlay color - black */
+  opacity: var(--cta-overlay-opacity, 0.1); /* Opacity controlled by schema, defaults to 0.1 (10%) */
+  z-index: 1; /* Overlay is behind the content */
+}
+
+.custom-cta__content-wrapper {
+  position: relative; /* To sit above overlay */
+  z-index: 2; /* Content wrapper is above the overlay */
+  width: 100%; /* Takes full width of page-width container (if .page-width is applied) */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Vertically center content within its allocated space */
+  /* Horizontal padding is controlled by --cta-mobile-padding-x on mobile,
+     and by the .page-width class on desktop (which usually adds its own padding) */
+  padding-top: var(--cta-mobile-padding-y, 40px); /* Default vertical padding, overridden on mobile */
+  padding-bottom: var(--cta-mobile-padding-y, 40px);
+  box-sizing: border-box;
+}
+
+/* Desktop Text alignment based on schema setting */
+/* These classes are on the main .custom-cta-section element */
+.custom-cta--text-left .custom-cta__content-wrapper {
+  align-items: flex-start; /* Aligns the .custom-cta__content block to the left */
+}
+.custom-cta--text-left .custom-cta__content {
+  text-align: left; /* Aligns text inside the .custom-cta__content block to the left */
+}
+
+.custom-cta--text-center .custom-cta__content-wrapper {
+  align-items: center; /* Aligns the .custom-cta__content block to the center */
+}
+.custom-cta--text-center .custom-cta__content {
+  text-align: center; /* Aligns text inside the .custom-cta__content block to the center */
+}
+
+.custom-cta__content {
+  max-width: var(--cta-content-max-width, 500px); /* Max width of the text block, controlled by schema */
+  box-sizing: border-box;
+}
+
+.custom-cta__heading {
+  font-size: 2.4em; /* Base font size for heading */
+  font-weight: 700; /* Or your custom heading font weight */
+  line-height: 1.2; /* Line spacing */
+  margin-top: 0;
+  margin-bottom: var(--cta-heading-margin-bottom-desktop, 15px); /* Space below heading, controlled by schema */
+  color: inherit; /* Inherits text color from .custom-cta-section (should be white) */
+  /* Example: font-family: 'Avigea', sans-serif; */
+}
+
+.custom-cta__subline {
+  font-size: 1.1em; /* Base font size for subline */
+  line-height: 1.6;
+  margin-bottom: var(--cta-subline-margin-bottom-desktop, 25px); /* Space below subline, controlled by schema */
+  color: inherit; /* Inherits text color */
+  opacity: 0.9; /* Slightly less prominent than heading */
+  /* Example: font-family: 'Lustria', serif; */
+}
+
+.custom-cta__subline p { /* Targets paragraphs within the richtext editor for subline */
+  margin-bottom: 0; /* Removes default bottom margin from paragraphs */
+  color: inherit; /* Ensure p tags inside also get the intended color */
+}
+
+.custom-cta__button.btn {
+  background-color: transparent; /* Button background color */
+  color: #ffffff; /* Button text color */
+  border: 2px solid #ffffff; /* Button border */
+  padding: 12px 28px; /* Button padding (top/bottom, left/right) */
+  text-decoration: none; /* Removes underline from link */
+  border-radius: 4px; /* Rounded corners for the button, or your theme's default */
+  font-weight: 600; /* Font weight for button text */
+  font-size: 1em; /* Base font size for button text */
+  cursor: pointer; /* Changes cursor to indicate interactivity */
+  display: inline-block; /* Allows padding and margin, and proper sizing */
+  text-align: center; /* Centers text within the button */
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; /* Smooth transitions for hover effects */
+  z-index: 3; /* Ensures button is clickable if overlapping anything */
+  position: relative; /* Required for z-index to apply correctly in some contexts */
+}
+
+.custom-cta__button.btn:hover {
+  background-color: #ffffff; /* Button background color on hover */
+  color: #333333; /* Button text color on hover (dark text on white background) */
+  border-color: #ffffff; /* Button border color on hover */
+}
+
+/* Animation classes - content starts visible unless JS adds 'is-visible' later */
+.custom-cta__content .animate-on-scroll {
+  opacity: 1; /* Start visible by default */
+  transform: translateY(0); /* Start at original position */
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out; /* Animation timing and easing */
+}
+/* When JS adds .is-visible (if IntersectionObserver is used for this section) */
+.custom-cta__content .animate-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Staggering delays for animation (example - uncomment if using animation JS) */
+/*
+.custom-cta__content .custom-cta__heading.animate-on-scroll { transition-delay: 0.1s; }
+.custom-cta__content .custom-cta__subline.animate-on-scroll { transition-delay: 0.2s; }
+.custom-cta__content .custom-cta__button.animate-on-scroll { transition-delay: 0.3s; }
+*/
+
+/* Responsive adjustments */
+@media (max-width: 768px) { /* Common breakpoint for mobile/tablet */
+  .custom-cta-section {
+    min-height: var(--cta-section-height, 50vh); /* Can adjust mobile height separately if needed via schema or hardcode */
+    background-image: var(--cta-mobile-image, var(--cta-desktop-image)); /* Use mobile image if set, else fallback to desktop image */
+  }
+
+  .custom-cta__content-wrapper {
+    /* Apply mobile-specific padding using CSS variables from Liquid */
+    padding: var(--cta-mobile-padding-y, 30px) var(--cta-mobile-padding-x, 20px);
+  }
+
+  /* Apply mobile text alignment based on class from Liquid */
+  /* These classes are on the main .custom-cta-section element */
+  .custom-cta--text-mobile-left .custom-cta__content-wrapper {
+    align-items: flex-start;
+  }
+  .custom-cta--text-mobile-left .custom-cta__content {
+    text-align: left;
+  }
+  .custom-cta--text-mobile-center .custom-cta__content-wrapper {
+    align-items: center;
+  }
+  .custom-cta--text-mobile-center .custom-cta__content {
+    text-align: center;
+  }
+  .custom-cta--text-mobile-right .custom-cta__content-wrapper {
+    align-items: flex-end;
+  }
+  .custom-cta--text-mobile-right .custom-cta__content {
+    text-align: right;
+  }
+
+  .custom-cta__content {
+    /* On mobile, text alignment is primarily controlled by the wrapper's align-items and content's text-align.
+       max-width can be adjusted if needed for mobile, or set to a percentage. */
+    max-width: 90%; /* Example: allow content to be wider on mobile relative to its wrapper */
+  }
+
+  .custom-cta__heading {
+    font-size: 2em; /* Reduce heading font size for smaller screens */
+    margin-bottom: 15px; /* Default mobile margin, desktop variable won't apply here unless re-specified */
+  }
+  .custom-cta__subline {
+    font-size: 1em; /* Reduce subline font size */
+    margin-bottom: 20px; /* Default mobile margin */
+  }
+  .custom-cta__button.btn {
+    padding: 10px 24px;
+    font-size: 0.95em;
+  }
+}
+
+@media (max-width: 480px) { /* Smaller mobile screens */
+  .custom-cta-section {
+    min-height: var(--cta-section-height, 45vh); /* Further adjust height if needed */
+  }
+  .custom-cta__heading {
+    font-size: 1.7em; /* Further reduce heading font size */
+  }
+  .custom-cta__subline {
+    font-size: 0.9em; /* Further reduce subline font size */
+  }
+  .custom-cta__button.btn {
+    width: auto; /* Button width adjusts to content */
+    max-width: 100%; /* Prevents button from exceeding screen width */
+    padding: 10px 20px;
+  }
+}
