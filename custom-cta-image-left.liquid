@@ -1,0 +1,220 @@
+{{ 'section-custom-cta-image-left.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign section_image = section.settings.image
+  assign section_image_mobile = section.settings.image_mobile
+  assign heading = section.settings.heading
+  assign subline = section.settings.subline
+  assign button_label = section.settings.button_label
+  assign button_link = section.settings.button_link
+
+  assign text_alignment = section.settings.text_alignment
+  assign text_alignment_mobile = section.settings.text_alignment_mobile
+
+  assign content_max_width = section.settings.content_max_width
+  assign section_height = section.settings.section_height
+  assign overlay_opacity = section.settings.overlay_opacity | divided_by: 100.0
+
+  assign heading_margin_bottom_desktop = section.settings.heading_margin_bottom_desktop
+  assign subline_margin_bottom_desktop = section.settings.subline_margin_bottom_desktop
+
+  assign mobile_content_padding_x = section.settings.mobile_content_padding_x
+  assign mobile_content_padding_y = section.settings.mobile_content_padding_y
+
+
+  assign text_animation_class = "animate-on-scroll"
+-%}
+
+<div id="shopify-section-{{ section.id }}"
+     class="custom-cta-section custom-cta--text-{{ text_alignment }} custom-cta--text-mobile-{{ text_alignment_mobile }}"
+     style="--cta-section-height: {{ section_height }}vh;
+            --cta-overlay-opacity: {{ overlay_opacity }};
+            {% if section_image %}--cta-desktop-image: url('{{ section_image | image_url: width: 1800 }}');{% endif %}
+            {% if section_image_mobile %}--cta-mobile-image: url('{{ section_image_mobile | image_url: width: 900 }}');{% else if section_image %}--cta-mobile-image: url('{{ section_image | image_url: width: 900 }}');{% endif %}
+            --cta-heading-margin-bottom-desktop: {{ heading_margin_bottom_desktop }}px;
+            --cta-subline-margin-bottom-desktop: {{ subline_margin_bottom_desktop }}px;
+            --cta-mobile-padding-x: {{ mobile_content_padding_x }}px;
+            --cta-mobile-padding-y: {{ mobile_content_padding_y }}px;"
+     data-section-id="{{ section.id }}"
+     data-section-type="custom-cta-image-left">
+
+  <div class="custom-cta__overlay"></div>
+
+  <div class="page-width custom-cta__content-wrapper" style="--cta-content-max-width: {{ content_max_width }}px;">
+    <div class="custom-cta__content">
+      {% if heading != blank %}
+        <h2 class="custom-cta__heading {{ text_animation_class }}">{{ heading | escape }}</h2>
+      {% endif %}
+      {% if subline != blank %}
+        <div class="custom-cta__subline rte {{ text_animation_class }}">{{ subline }}</div>
+      {% endif %}
+      {% if button_label != blank and button_link != blank %}
+        <a href="{{ button_link }}" class="btn custom-cta__button {{ text_animation_class }}">
+          {{ button_label | escape }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% comment %}
+  JavaScript for animations can be added here if desired, similar to other sections.
+  The animate-on-scroll classes are present in the HTML.
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "CTA Image Left",
+  "tag": "section",
+  "class": "section-custom-cta",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background Images"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background Image (Desktop)"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Background Image (Mobile)",
+      "info": "Optional. If blank, desktop image will be used."
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "label": "Section Height (percentage of screen height)",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "label": "Image Overlay Opacity",
+      "default": 10,
+      "info": "Darkens the image to make text more readable. 0% is no overlay."
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Limited Drop – Sunwoven ‘25"
+    },
+    {
+      "type": "richtext",
+      "id": "subline",
+      "label": "Subline",
+      "default": "<p>A collection inspired by sunlit days and slow moments</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "See What's New"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Desktop Layout"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text Alignment (Desktop)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "min": 300,
+      "max": 800,
+      "step": 20,
+      "unit": "px",
+      "label": "Content Max Width (Desktop)",
+      "default": 500
+    },
+    {
+      "type": "range",
+      "id": "heading_margin_bottom_desktop",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Space Below Heading (Desktop)",
+      "default": 16 /* MODIFIED: Was 15, which is not a multiple of step 2 */
+    },
+    {
+      "type": "range",
+      "id": "subline_margin_bottom_desktop",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Space Below Subline (Desktop)",
+      "default": 26 /* MODIFIED: Was 25, which is not a multiple of step 2 */
+    },
+    {
+      "type": "header",
+      "content": "Mobile Layout"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment_mobile",
+      "label": "Text Alignment (Mobile)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "mobile_content_padding_x",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Content Horizontal Padding (Mobile)",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "mobile_content_padding_y",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Content Vertical Padding (Mobile)",
+      "default": 30
+    }
+  ],
+  "presets": [
+    {
+      "name": "CTA Image Left"
+    }
+  ]
+}
+{% endschema %}
