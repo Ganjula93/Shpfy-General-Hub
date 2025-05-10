@@ -1,0 +1,386 @@
+/* section-custom-main-header.css */
+
+/* ==========================================================================
+   Variables & Base Styles
+   ========================================================================== */
+:root {
+  --header-height-initial: 90px;
+  --header-height-shrunk: 70px;
+  --header-padding-vertical-initial: 20px;
+  --header-padding-vertical-shrunk: 10px;
+  --header-padding-horizontal: 30px;
+  --header-transition-duration: 0.3s;
+  --header-text-color-light: #ffffff;
+  --header-text-color-dark: #333333;
+  --mobile-nav-breakpoint: 990px;
+}
+
+.custom-main-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: transparent;
+  transition: background-color var(--header-transition-duration) ease,
+              height var(--header-transition-duration) ease;
+  height: var(--header-height-initial);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.custom-main-header__wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: var(--header-padding-vertical-initial) var(--header-padding-horizontal);
+  box-sizing: border-box;
+  transition: padding var(--header-transition-duration) ease;
+}
+
+/* ==========================================================================
+   Sticky and Scrolled States
+   ========================================================================== */
+.custom-main-header--sticky.header-scrolled {
+  position: fixed;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e0e0e0;
+}
+.custom-main-header--sticky.header-scrolled.mobile-menu-active-on-header {
+    background-color: #ffffff !important;
+}
+
+.custom-main-header--sticky.custom-main-header--can-shrink.header-scrolled {
+  height: var(--header-height-shrunk);
+}
+
+.custom-main-header--sticky.custom-main-header--can-shrink.header-scrolled .custom-main-header__wrapper {
+  padding-top: var(--header-padding-vertical-shrunk);
+  padding-bottom: var(--header-padding-vertical-shrunk);
+}
+
+/* Text color change on scroll - GENERAL */
+.custom-main-header.header-scrolled .custom-main-header__shop-name,
+.custom-main-header.header-scrolled .custom-main-header__icon,
+.custom-main-header.header-scrolled .custom-main-header__mobile-menu-toggle {
+  color: var(--header-text-color-dark);
+}
+
+/* MODIFIED: Text color change for DESKTOP menu links on scroll - increased specificity */
+.custom-main-header.header-scrolled .custom-main-header__navigation .custom-main-header__menu-link {
+  color: var(--header-text-color-dark);
+}
+
+.custom-main-header.header-scrolled .custom-main-header__navigation .custom-main-header__menu-link:hover, /* MODIFIED */
+.custom-main-header.header-scrolled .custom-main-header__icon:hover,
+.custom-main-header.header-scrolled .custom-main-header__mobile-menu-toggle:hover {
+  color: var(--header-text-color-dark); /* Keep dark on hover */
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   Logo Styling
+   ========================================================================== */
+.custom-main-header__logo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  z-index: 1002;
+}
+
+.custom-main-header__logo-link {
+  display: inline-block;
+}
+
+.custom-main-header__logo-image {
+  display: block;
+  max-height: calc(var(--header-height-initial) - (2 * var(--header-padding-vertical-initial)));
+  width: auto;
+  transition: opacity var(--header-transition-duration) ease, max-height var(--header-transition-duration) ease;
+}
+.custom-main-header--sticky.custom-main-header--can-shrink.header-scrolled .custom-main-header__logo-image {
+   max-height: calc(var(--header-height-shrunk) - (2 * var(--header-padding-vertical-shrunk)));
+}
+
+.custom-main-header .custom-main-header__logo-image--light {
+  display: block;
+}
+.custom-main-header .custom-main-header__logo-image--dark {
+  display: none;
+}
+
+.custom-main-header.header-scrolled .custom-main-header__logo-image--light {
+  display: none !important;
+}
+.custom-main-header.header-scrolled .custom-main-header__logo-image--dark {
+  display: block !important;
+}
+
+.custom-main-header__shop-name {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: var(--header-text-color-light);
+  text-decoration: none;
+  transition: color var(--header-transition-duration) ease;
+}
+
+/* ==========================================================================
+   Desktop Navigation Menu Styling (Default State)
+   ========================================================================== */
+.custom-main-header .custom-main-header__navigation {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.custom-main-header .custom-main-header__navigation .custom-main-header__menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+.custom-main-header .custom-main-header__navigation .custom-main-header__menu-item {
+  position: relative;
+  margin-left: 30px;
+}
+.custom-main-header .custom-main-header__navigation .custom-main-header__menu-item:first-child {
+  margin-left: 0;
+}
+
+.custom-main-header .custom-main-header__navigation .custom-main-header__menu-link {
+  display: block;
+  padding: 5px 0;
+  text-decoration: none;
+  color: var(--header-text-color-light); /* This is the initial light color */
+  font-weight: 500;
+  font-size: 1em;
+  transition: color var(--header-transition-duration) ease, opacity var(--header-transition-duration) ease;
+  position: relative;
+}
+
+.custom-main-header .custom-main-header__navigation .custom-main-header__menu-link:hover,
+.custom-main-header .custom-main-header__navigation .custom-main-header__menu-link--active {
+  color: var(--header-text-color-light); /* Keep light on hover for transparent header */
+  opacity: 0.7;
+}
+
+/* Desktop Dropdown Styling - inherits link colors based on header state */
+.custom-main-header .custom-main-header__navigation .custom-main-header__dropdown-list {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #ffffff; /* Dropdowns always have white background */
+  list-style: none;
+  margin: 5px 0 0 0;
+  padding: 10px 0;
+  min-width: 200px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e0e0e0;
+  z-index: 1001;
+}
+
+.custom-main-header .custom-main-header__navigation .custom-main-header__menu-item:hover .custom-main-header__dropdown-list {
+  display: block;
+}
+
+.custom-main-header .custom-main-header__navigation .custom-main-header__dropdown-link {
+  display: block;
+  padding: 8px 20px;
+  text-decoration: none;
+  color: var(--header-text-color-dark); /* Dropdown links are always dark on white bg */
+  font-size: 0.95em;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.custom-main-header .custom-main-header__navigation .custom-main-header__dropdown-link:hover,
+.custom-main-header .custom-main-header__navigation .custom-main-header__dropdown-link--active {
+  background-color: #f5f5f5;
+  color: #000000;
+}
+
+/* ==========================================================================
+   Header Icons
+   ========================================================================== */
+.custom-main-header__icons {
+  display: flex;
+  align-items: center;
+  margin-left: 30px;
+  z-index: 1002;
+}
+
+.custom-main-header__icon {
+  margin-left: 20px;
+  color: var(--header-text-color-light);
+  text-decoration: none;
+  transition: color var(--header-transition-duration) ease, opacity var(--header-transition-duration) ease;
+}
+.custom-main-header__icon:first-child {
+    margin-left: 0;
+}
+.custom-main-header__icon svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+  fill: currentColor;
+}
+.custom-main-header__cart-count {
+  font-size: 0.7em;
+  margin-left: 2px;
+  position: relative;
+  top: -2px;
+}
+
+/* ==========================================================================
+   Mobile Menu Toggle & Navigation Panel - STYLES MOVED TO THE END OF FILE
+   ========================================================================== */
+.custom-main-header__mobile-menu-toggle {
+  display: none !important;
+  background: none;
+  border: none;
+  padding: 10px;
+  margin-left: auto;
+  cursor: pointer;
+  color: var(--header-text-color-light);
+  z-index: 1002;
+}
+.custom-main-header__mobile-menu-toggle .icon-close {
+  display: none;
+}
+.custom-main-header__mobile-menu-toggle[aria-expanded="true"] .icon-hamburger {
+  display: none;
+}
+.custom-main-header__mobile-menu-toggle[aria-expanded="true"] .icon-close {
+  display: block;
+}
+
+.custom-main-header.mobile-menu-active-on-header {
+    background-color: #ffffff;
+}
+.custom-main-header.mobile-menu-active-on-header .custom-main-header__shop-name,
+.custom-main-header.mobile-menu-active-on-header .custom-main-header__icon,
+.custom-main-header.mobile-menu-active-on-header .custom-main-header__mobile-menu-toggle {
+    color: var(--header-text-color-dark);
+}
+.custom-main-header.mobile-menu-active-on-header .custom-main-header__logo-image--light {
+    display: none !important;
+}
+.custom-main-header.mobile-menu-active-on-header .custom-main-header__logo-image--dark {
+    display: block !important;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --header-height-initial: 80px;
+    --header-height-shrunk: 60px;
+    --header-padding-horizontal: 20px;
+  }
+  .custom-main-header__shop-name {
+    font-size: 1.3em;
+  }
+}
+
+@media (max-width: 480px) {
+    :root {
+    --header-height-initial: 70px;
+    --header-height-shrunk: 50px;
+    --header-padding-horizontal: 15px;
+  }
+  .custom-main-header__shop-name {
+    font-size: 1.2em;
+  }
+  .custom-main-header__icons {
+    margin-left: 15px;
+  }
+  .custom-main-header__icon {
+    margin-left: 15px;
+  }
+  .custom-main-header .custom-main-header__mobile-menu-toggle {
+      margin-left: 10px;
+      padding: 8px;
+  }
+}
+
+body.mobile-nav-active {
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   MOBILE NAVIGATION OVERRIDES - PLACED AT THE END FOR SPECIFICITY
+   ========================================================================== */
+@media (max-width: 990px) {
+
+  .custom-main-header .custom-main-header__navigation {
+    display: none !important;
+  }
+  .custom-main-header .custom-main-header__navigation .custom-main-header__menu-list {
+    display: none !important;
+  }
+
+  .custom-main-header .custom-main-header__mobile-menu-toggle {
+    display: block !important;
+    margin-left: auto;
+  }
+
+  .custom-main-header .custom-main-header__icons {
+     /* display: none !important; */ /* Uncomment to hide other icons on mobile */
+  }
+
+  .custom-main-header .custom-main-header__navigation.mobile-nav-open {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 80%;
+    max-width: 300px;
+    height: 100vh;
+    background-color: #ffffff;
+    padding: 20px;
+    padding-top: calc(var(--header-height-initial) + 10px);
+    box-sizing: border-box;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    transition: left 0.35s ease-in-out;
+    z-index: 1001;
+    overflow-y: auto;
+    left: 0;
+  }
+
+  .custom-main-header .custom-main-header__navigation.mobile-nav-open .custom-main-header__menu-list {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .custom-main-header .custom-main-header__navigation.mobile-nav-open .custom-main-header__menu-item {
+    margin-left: 0;
+    width: 100%;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .custom-main-header .custom-main-header__navigation.mobile-nav-open .custom-main-header__menu-item:last-child {
+    border-bottom: none;
+  }
+
+  .custom-main-header .custom-main-header__navigation.mobile-nav-open .custom-main-header__menu-link {
+    color: var(--header-text-color-dark);
+    padding: 15px 10px;
+    width: 100%;
+    display: block;
+    font-size: 1.1em;
+  }
+  .custom-main-header .custom-main-header__navigation.mobile-nav-open .custom-main-header__menu-link:hover,
+  .custom-main-header .custom-main-header__navigation.mobile-nav-open .custom-main-header__menu-link--active {
+    color: var(--header-text-color-dark);
+    background-color: #f5f5f5;
+    opacity: 1;
+  }
+
+  .custom-main-header .custom-main-header__navigation.mobile-nav-open .custom-main-header__dropdown-list {
+    display: none !important;
+  }
+}

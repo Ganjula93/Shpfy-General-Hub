@@ -1,0 +1,29 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "header": {
+      "type": "custom-main-header",
+      "settings": {
+        "logo_light": "shopify://shop_images/Yamvic-Logo.png",
+        "logo_dark": "shopify://shop_images/Yamvic-Black.png",
+        "logo_max_width": 150,
+        "menu": "main-menu",
+        "enable_sticky": true,
+        "shrink_on_scroll": true
+      }
+    }
+  },
+  "order": [
+    "header"
+  ]
+}

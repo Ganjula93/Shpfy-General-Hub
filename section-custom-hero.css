@@ -1,0 +1,220 @@
+/* section-custom-hero.css */
+
+.custom-hero-section {
+  position: relative; /* Establishes a stacking context and anchor for absolute children */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #ffffff; /* Default text color, assuming dark background/overlay */
+  display: flex; /* Enables flexbox for centering content */
+  flex-direction: column; /* Stacks flex items vertically */
+  align-items: center; /* Centers flex items horizontally */
+  justify-content: center; /* Centers flex items vertically */
+  min-height: 400px; /* Minimum height if not full screen */
+  padding: 40px 20px; /* Default padding for the section */
+  box-sizing: border-box; /* Includes padding and border in the element's total width and height */
+  overflow: hidden; /* Prevents content from spilling out and causing scrollbars, e.g., from nowrap text */
+}
+
+.custom-hero-section.custom-hero--full-height {
+  min-height: 100vh; /* Makes the section take up the full viewport height */
+}
+
+.custom-hero-section.custom-hero--no-image {
+  background-color: #333; /* Fallback background color if no image is set */
+}
+
+.custom-hero__overlay {
+  position: absolute; /* Positions the overlay relative to .custom-hero-section */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000000; /* Overlay color (black) */
+  opacity: var(--hero-overlay-opacity, 0.3); /* Opacity controlled by schema, defaults to 0.3 */
+  z-index: 1; /* Ensures overlay is above background image but below content */
+}
+
+.custom-hero__logo-wrapper {
+  position: absolute; /* Positions the logo relative to .custom-hero-section */
+  top: 30px; /* Space from the top edge */
+  left: 30px;  /* Space from the left edge */
+  z-index: 3; /* Ensures logo is above overlay and other content */
+}
+
+.custom-hero__logo-image {
+  display: block; /* Removes extra space below the image if it were inline */
+  max-width: 100%; /* Ensures logo is responsive within its specified width from schema */
+  height: auto; /* Maintains aspect ratio */
+}
+
+.custom-hero__content-wrapper {
+  position: relative; /* Establishes stacking context for z-index */
+  z-index: 2; /* Ensures content is above the overlay */
+  width: 100%; /* Takes full width of its parent (.custom-hero-section after padding) */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Default horizontal alignment (center), overridden by specific classes */
+  justify-content: center; /* Default vertical alignment (center) */
+  text-align: center; /* Default text alignment for content within */
+}
+
+/* Text alignment utility classes for the content wrapper */
+.custom-hero__content--left {
+  align-items: flex-start; /* Aligns content block to the left */
+  text-align: left; /* Aligns text within the block to the left */
+}
+.custom-hero__content--center {
+  align-items: center; /* Aligns content block to the center (default) */
+  text-align: center; /* Aligns text within the block to the center (default) */
+}
+.custom-hero__content--right {
+  align-items: flex-end; /* Aligns content block to the right */
+  text-align: right; /* Aligns text within the block to the right */
+}
+
+.custom-hero__content {
+  max-width: 900px; /* Increased max-width for the text content block to allow for single-line text */
+                     /* Adjust as needed based on font size and text length */
+}
+
+.custom-hero__decorative-image {
+  display: block; /* Ensures it's on its own line and margins apply correctly */
+  margin-left: auto; /* Centers the image if text-align is center */
+  margin-right: auto; /* Centers the image if text-align is center */
+  margin-bottom: 20px; /* Space below the decorative image */
+  max-height: 500px; /* Optional: constraint for decorative image height */
+  /* Width is controlled by inline style `max-width: {{ decorative_image_max_width }}px;` from Liquid */
+}
+
+/* Adjust decorative image margins for left/right text alignment */
+.custom-hero__content--left .custom-hero__decorative-image {
+  margin-left: 0; /* Aligns decorative image to the left */
+}
+.custom-hero__content--right .custom-hero__decorative-image {
+  margin-right: 0; /* Aligns decorative image to the right */
+}
+
+.custom-hero__heading {
+  font-size: 3.2em; /* Base font size for heading */
+  text-align: center;
+  font-weight: 700; /* Boldness of the heading */
+  line-height: 1.2; /* Line spacing */
+  margin-top: 0;
+  margin-bottom: 0.5em; /* Space below the heading */
+  color: inherit; /* Inherits text color from .custom-hero-section */
+  white-space: nowrap; /* Forces heading onto one line. CAUTION: Can cause overflow. */
+                      /* Remove or adjust if text is too long or on smaller screens. */
+}
+
+.custom-hero__subheading {
+  font-size: 1.6em; /* Base font size for subheading */
+  line-height: 1.6;
+  margin-bottom: 1.5em; /* Space below subheading */
+  color: inherit;
+  letter-spacing: 2px;
+  /* white-space: nowrap; */ /* Optional: Uncomment to force subline to one line, use with caution */
+}
+
+.custom-hero__subheading p { /* Targets paragraphs within the richtext editor for subheading */
+  margin-bottom: 0; /* Removes default bottom margin from paragraphs */
+}
+
+.custom-hero__button.btn {
+  background-color: #ffffff; /* Button background color */
+  color: #333333; /* Button text color */
+  padding: 14px 35px; /* Button padding (top/bottom, left/right) */
+  text-decoration: none; /* Removes underline from link */
+  border-radius: 4px; /* Rounded corners for the button */
+  font-weight: 600; /* Font weight for button text */
+  font-size: 1.2em; /* Font size for button text */
+  border: 2px solid transparent; /* Transparent border, can be colored on hover */
+  cursor: pointer; /* Changes cursor to indicate interactivity */
+  display: inline-block; /* Allows padding and margin, and centers text if text-align:center */
+  text-align: center; /* Centers text within the button */
+  transition: background-color 0.1s ease, color 0.1s ease, transform 0.1s ease, border-color 0.1s ease; /* Smooth transitions for hover effects */
+  z-index: 3; /* Ensures button is above other elements in its flow if needed */
+  position: relative; /* Required for z-index to properly work in some contexts */
+}
+
+.custom-hero__button.btn:hover {
+  background-color: #f0f0f0; /* Button background color on hover */
+  color: #000000; /* Button text color on hover */
+  border-color: #f0f0f0; /* Button border color on hover (matches background) */
+  transform: scale(1.03); /* Slightly enlarges button on hover */
+}
+
+/* Placeholder style for the button in the Shopify theme editor when not configured */
+.custom-hero__button--placeholder {
+  border: 2px dashed rgba(255,255,255,0.5); /* Dashed border for placeholder */
+  padding: 14px 35px;
+  display: inline-block;
+  margin-top: 1.5em;
+  color: rgba(255,255,255,0.7); /* Semi-transparent text color */
+}
+.custom-hero__button--placeholder p {
+  margin:0;
+  font-size: 0.9em;
+}
+
+/* Animation classes for fade-in effect on scroll */
+.animate-on-scroll {
+  opacity: 0; /* Start fully transparent */
+  transform: translateY(20px); /* Start slightly lower */
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out; /* Animation timing and easing */
+  transition-delay: 0s; /* Base delay, overridden by JavaScript for staggering */
+}
+
+.animate-on-scroll.is-visible {
+  opacity: 1; /* Fade to fully opaque */
+  transform: translateY(0); /* Move to original position */
+}
+
+/* Responsive adjustments for different screen sizes */
+@media (max-width: 960px) { /* Tablet and smaller */
+  .custom-hero__content {
+    max-width: 90%; /* Allow content to use more of the screen width */
+  }
+  .custom-hero__heading {
+    font-size: 2.2em; /* Reduce heading font size */
+    white-space: normal; /* Allow heading to wrap onto multiple lines */
+  }
+  .custom-hero__subheading {
+    font-size: 1.1em; /* Reduce subheading font size */
+    white-space: normal; /* Allow subheading to wrap */
+  }
+}
+
+@media (max-width: 768px) { /* Smaller tablets */
+  /* .custom-hero__heading font size already adjusted above */
+  /* .custom-hero__subheading font size already adjusted above */
+  .custom-hero__button.btn {
+    padding: 12px 30px;
+    font-size: 1em;
+  }
+  .custom-hero__logo-wrapper {
+    top: 15px; /* Adjust logo position */
+    left: 15px;
+  }
+  .custom-hero__decorative-image {
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 480px) { /* Mobile phones */
+  .custom-hero-section {
+    padding: 30px 15px; /* Reduce section padding */
+  }
+  .custom-hero__heading {
+    font-size: 1.8em; /* Further reduce heading font size */
+  }
+  .custom-hero__subheading {
+    font-size: 1em; /* Further reduce subheading font size */
+  }
+   .custom-hero__button.btn {
+    padding: 12px 25px;
+    font-size: 0.95em;
+    width: auto; /* Button width adjusts to content */
+    max-width: 100%; /* Prevents button from exceeding screen width */
+  }
+}
