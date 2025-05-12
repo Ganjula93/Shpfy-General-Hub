@@ -1,0 +1,291 @@
+{% comment %}
+  Shopify Liquid Section: About Us - Split Layout
+
+  Displays an image on one side and text (headline + body) on the other.
+  Layout reverses on mobile (text first, then image).
+  Includes responsive font sizes and text alignment for headline and body text.
+  Text content is vertically centered within its column on desktop.
+  Applies the selected background color to the entire section.
+
+  Customizable settings:
+  - Background color for the section
+  - Text color
+  - Headline text
+  - Body text (rich text)
+  - Image selection
+  - Headline font size (mobile & desktop)
+  - Body text font size (mobile & desktop)
+  - Text alignment (mobile & desktop)
+{% endcomment %}
+
+{% comment %} CSS Styles with Responsive Fonts, Alignment, Vertical Centering, and Full Background {% endcomment %}
+<style>
+  /* Scoped styles for this section */
+  .about-us-split-{{ section.id }} {
+    display: flex;
+    flex-wrap: wrap; /* Allows items to wrap on smaller screens */
+    overflow: hidden; /* Prevent content overflow */
+    background-color: {{ section.settings.section_bg_color }}; /* Apply background color to the whole section */
+  }
+
+  .about-us-split-{{ section.id }}__col {
+    width: 100%; /* Default to full width for mobile */
+    display: flex; /* Use flexbox for centering content */
+    flex-direction: column; /* Stack content vertically */
+    justify-content: center; /* Vertically center the content (text-content div) */
+  }
+
+  .about-us-split-{{ section.id }}__text-content {
+    padding: 40px; /* Add padding around the text */
+    color: {{ section.settings.text_color }}; /* Text color for this column */
+    order: 1; /* Text comes first on mobile */
+    width: 100%; /* Ensure text content takes full width of its column */
+    text-align: {{ section.settings.text_align_mobile }}; /* Mobile text alignment */
+  }
+
+  .about-us-split-{{ section.id }}__image-wrapper {
+    position: relative;
+    min-height: 300px; /* Minimum height for the image area on mobile */
+    order: 2; /* Image comes second on mobile */
+    display: flex;
+    align-items: stretch; /* Make image wrapper stretch vertically */
+  }
+
+  .about-us-split-{{ section.id }}__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* Placeholder SVG styling */
+  .about-us-split-{{ section.id }} .placeholder-svg {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    margin: auto;
+    /* fill: {{ section.settings.text_color }}; */
+  }
+
+  /* Font styles - Mobile first */
+  .about-us-split-{{ section.id }}__headline {
+    font-size: {{ section.settings.headline_size_mobile | divided_by: 16.0 }}rem;
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: inherit;
+    line-height: 1.2;
+  }
+
+  .about-us-split-{{ section.id }}__body {
+     color: inherit;
+  }
+
+  .about-us-split-{{ section.id }}__body p {
+    font-size: {{ section.settings.body_size_mobile | divided_by: 16.0 }}rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+  }
+  .about-us-split-{{ section.id }}__body p:last-child {
+    margin-bottom: 0;
+  }
+
+
+  /* Desktop Styles (adjust breakpoint as needed) */
+  @media (min-width: 768px) {
+    .about-us-split-{{ section.id }} {
+      flex-wrap: nowrap;
+      min-height: 400px;
+    }
+
+    .about-us-split-{{ section.id }}__col {
+      width: 50%;
+      align-self: stretch;
+    }
+
+    .about-us-split-{{ section.id }}__text-content {
+       order: initial;
+       padding: 60px;
+       text-align: {{ section.settings.text_align_desktop }}; /* Desktop text alignment */
+    }
+
+     .about-us-split-{{ section.id }}__image-wrapper {
+       order: initial;
+       min-height: initial;
+    }
+
+    /* Desktop Font Styles */
+    .about-us-split-{{ section.id }}__headline {
+      font-size: {{ section.settings.headline_size_desktop | divided_by: 16.0 }}rem;
+    }
+
+    .about-us-split-{{ section.id }}__body p {
+      font-size: {{ section.settings.body_size_desktop | divided_by: 16.0 }}rem;
+      line-height: 1.6;
+    }
+  }
+
+</style>
+
+{% comment %} HTML Structure {% endcomment %}
+<div class="about-us-split-{{ section.id }}">
+
+  {% comment %} Image Column - Order changes based on screen size via CSS {% endcomment %}
+  <div class="about-us-split-{{ section.id }}__col about-us-split-{{ section.id }}__image-wrapper">
+    {% if section.settings.image != blank %}
+      <img
+        src="{{ section.settings.image | image_url: width: 1200 }}"
+        srcset="{{ section.settings.image | image_url: width: 400 }} 400w,
+                {{ section.settings.image | image_url: width: 600 }} 600w,
+                {{ section.settings.image | image_url: width: 800 }} 800w,
+                {{ section.settings.image | image_url: width: 1000 }} 1000w,
+                {{ section.settings.image | image_url: width: 1200 }} 1200w"
+        sizes="(max-width: 767px) 100vw, 50vw"
+        alt="{{ section.settings.image.alt | escape | default: section.settings.headline | escape }}"
+        loading="lazy"
+        class="about-us-split-{{ section.id }}__image"
+        width="{{ section.settings.image.width }}"
+        height="{{ section.settings.image.height }}"
+      >
+    {% else %}
+      {% comment %} Placeholder when no image is selected {% endcomment %}
+      {{ 'image' | placeholder_svg_tag: 'placeholder-svg placeholder-svg--no-image' }}
+    {% endif %}
+  </div>
+
+  {% comment %} Text Column - Order changes based on screen size via CSS {% endcomment %}
+  <div class="about-us-split-{{ section.id }}__col">
+    <div class="about-us-split-{{ section.id }}__text-content">
+      {% if section.settings.headline != blank %}
+        <h2 class="about-us-split-{{ section.id }}__headline">{{ section.settings.headline | escape }}</h2>
+      {% endif %}
+      {% if section.settings.text != blank %}
+        <div class="about-us-split-{{ section.id }}__body rte">
+          {{ section.settings.text }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+{% comment %} Shopify Schema Definition {% endcomment %}
+{% schema %}
+{
+  "name": "About Us - Split",
+  "tag": "section",
+  "class": "section-about-us-split",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Headline",
+      "default": "About Us"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section Background Color",
+      "default": "#f0f0f0"
+    },
+     {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#333333"
+    },
+    {
+      "type": "header",
+      "content": "Font Sizes"
+    },
+    {
+      "type": "range",
+      "id": "headline_size_mobile",
+      "min": 16,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "label": "Headline Size (Mobile)",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "headline_size_desktop",
+      "min": 20,
+      "max": 72,
+      "step": 1,
+      "unit": "px",
+      "label": "Headline Size (Desktop)",
+      "default": 36
+    },
+     {
+      "type": "range",
+      "id": "body_size_mobile",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Body Text Size (Mobile)",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "body_size_desktop",
+      "min": 14,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Body Text Size (Desktop)",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Text Alignment"
+    },
+    {
+      "type": "select",
+      "id": "text_align_mobile",
+      "label": "Text Alignment (Mobile)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "text_align_desktop",
+      "label": "Text Alignment (Desktop)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    }
+  ],
+  "presets": [
+    {
+      "name": "About Us - Split"
+    }
+  ]
+}
+{% endschema %}
