@@ -1,98 +1,95 @@
 /* section-featured-collections-grid.css */
 
-/* ... (all your existing CSS from before, up to the image zoom section) ... */
-
+/* Base container styling */
 .featured-collections-container {
   text-align: left;
   padding-top: 30px;
   padding-bottom: 30px;
+  /* Using page-width logic within the container itself */
+  padding-left: 15px; /* Adjust as per your theme's standard padding */
+  padding-right: 15px; /* Adjust as per your theme's standard padding */
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1200px; /* Adjust as per your theme's max-width */
 }
 
 .featured-collections-container--no-header {
   padding-top: 15px;
 }
 
+/* --- Section Header --- */
 .featured-collections__main-title {
-  font-size: 2.2em;
+  /* Mobile-first font size */
+  font-size: 2.8em; /* Smaller size for mobile */
   margin-bottom: 0.5em;
+  color: #625F49; /* Applied font color */
+  text-align: center; /* Or 'left' if preferred */
 }
 
 .featured-collections__subtitle {
   font-size: 1.1em;
   margin-bottom: 40px;
+  padding-left: 30%; /* Default padding for desktop */
+  padding-right: 30%; /* Default padding for desktop */
+  text-align: center; /* Or 'left' if preferred */
 }
 
 .featured-collections__subtitle p {
   margin: 0;
 }
 
+/* --- Collections Grid --- */
 .featured-collections__grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
+  grid-template-columns: 1fr; /* Single column on mobile */
+  gap: 20px; /* Gap for mobile */
   align-items: start;
-  justify-items: center;
+  justify-items: center; /* Center items within the grid cell */
 }
 
-@media (min-width: 550px) {
-  .featured-collections__grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 25px;
-  }
-}
-
-@media (min-width: 768px) {
-  .featured-collections__grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-  }
-}
-
+/* --- Individual Collection Item --- */
 .featured-collection-item {
-  text-align: left;
+  text-align: left; /* Default alignment for text inside the item */
   width: 100%;
-  max-width: 380px;
+  max-width: 380px; /* Max width for items, prevents them becoming too wide */
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-start; /* Align item content to the start (left) by default */
 }
 
-/* === IMAGE ZOOM ON HOVER: MODIFICATIONS START === */
+/* Image Wrapper & Zoom Effect */
 .featured-collection-item__image-wrapper {
   margin-bottom: 20px;
   width: 100%;
-  overflow: hidden; /* This is crucial to contain the scaled image */
+  overflow: hidden; /* Contain the scaled image */
   position: relative;
-  border-radius: 8px; /* Optional: if you want rounded corners on the image container */
+  border-radius: 8px; /* Optional rounded corners */
 }
 
 .custom-collection-image {
   display: block;
-  max-width: 100%;
+  width: 100%; /* Ensure image fills wrapper */
   height: auto;
-  /* MODIFIED: Changed transition timing function for a more standard Shopify feel */
-  transition: transform 0.3s ease-in-out; /* Smooth acceleration and deceleration */
-  /* ADDED: Explicitly set transform-origin to ensure centered zoom */
+  transition: transform 0.3s ease-in-out;
   transform-origin: center;
-  /* Optional: If you added border-radius to the wrapper, add it here too if image is not transparent */
-  /* border-radius: 8px; */
+  /* border-radius: 8px; */ /* Uncomment if wrapper has radius and image needs it */
 }
 
-/* Apply zoom ONLY when hovering the image itself */
 .custom-collection-image:hover {
-  transform: scale(1.05); /* Scale factor - adjust 1.05 (5% zoom) as desired */
+  transform: scale(1.05); /* 5% zoom on hover */
 }
-/* === IMAGE ZOOM ON HOVER: MODIFICATIONS END === */
 
-
+/* Placeholder styling */
 .shopify-image--placeholder .placeholder-svg {
   width: 100%;
-  height: 250px;
+  height: 250px; /* Adjust height as needed */
   display: block;
   border: 1px solid #f0f0f0;
   background-color: #f9f9f9;
+  border-radius: 8px; /* Match image wrapper radius */
 }
 
+/* Item Text Content */
 .featured-collection-item__title {
   font-size: 1.6em;
   margin-top: 0;
@@ -106,12 +103,14 @@
   line-height: 1.5;
   margin-bottom: 20px;
   width: 100%;
+  box-sizing: border-box; /* Ensure padding is included within the width */
 }
 
 .featured-collection-item__description p {
   margin: 0;
 }
 
+/* Item Button */
 .featured-collection-item__button.btn {
   display: inline-block;
   padding: 12px 28px;
@@ -120,17 +119,18 @@
   text-align: center;
   cursor: pointer;
   border: none;
-  background-color: #3A3A3A;
+  background-color: #625F49; /* UPDATED: Button color */
   color: #FFFFFF;
   border-radius: 4px;
-  margin-top: auto;
-  margin-left: auto;
-  margin-right: 0;
+  margin-top: auto; /* Pushes button to bottom if description heights vary */
+  /* Default alignment for desktop (left-aligned in this structure) */
+  margin-left: 0;
+  margin-right: auto;
   transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
 .featured-collection-item__button.btn:hover:not([aria-disabled="true"]) {
-  background-color: #2A2A2A;
+  background-color: #504d3c; /* UPDATED: Button hover color (darker shade) */
   transform: scale(1.03);
 }
 
@@ -146,20 +146,80 @@
   cursor: not-allowed;
 }
 
-.page-width {
-  padding-left: 15px;
-  padding-right: 15px;
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 1200px;
+
+/* --- Responsive Adjustments --- */
+
+/* Medium screens (e.g., Small Tablets) */
+@media (min-width: 550px) {
+  .featured-collections__grid {
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    gap: 25px; /* Adjust gap */
+  }
+  /* Optional: Intermediate font size for main title if needed */
+  /* .featured-collections__main-title { font-size: 3.2em; } */
 }
 
-/* Animation: Fade in on scroll */
+/* Larger screens (e.g., Tablets and Desktops) */
+@media (min-width: 768px) {
+  .featured-collections__grid {
+    grid-template-columns: repeat(3, 1fr); /* Three columns */
+    gap: 30px; /* Adjust gap */
+  }
+
+  /* Apply larger font size for the main title */
+  .featured-collections__main-title {
+    font-size: 4em; /* Desktop font size */
+  }
+
+  /* Optional: Adjust subtitle size */
+  /* .featured-collections__subtitle { font-size: 1.2em; } */
+}
+
+/* Optional: Wider screens if needed */
+/* @media (min-width: 1200px) { ... } */
+
+/* === MOBILE TEXT ALIGNMENT MODIFICATIONS START === */
+/* Media query for mobile devices (e.g., screen width up to 767px) */
+@media (max-width: 767px) {
+  .featured-collection-item {
+     /* Optional: Center the whole item block if desired */
+     /* align-items: center; */
+  }
+
+  /* UPDATED: Added rule for subtitle padding on mobile */
+  .featured-collections__subtitle {
+    padding-left: 10%;
+    padding-right: 10%;
+  }
+
+  .featured-collection-item__title {
+     text-align: center; /* Center align the heading text */
+  }
+
+  .featured-collection-item__description {
+    text-align: center; /* Center align the description text */
+    padding-left: 10%;  /* Add padding to make content slimmer (10% each side = 80% width) */
+    padding-right: 10%; /* Add padding to make content slimmer */
+  }
+
+  .featured-collection-item__button.btn {
+    margin-left: auto;   /* Center the button */
+    margin-right: auto;
+    display: block;       /* Make it a block element to allow auto margins for centering */
+    width: -webkit-fit-content; /* For Safari/Chrome */
+    width: -moz-fit-content;    /* For Firefox */
+    width: fit-content;       /* Standard */
+  }
+}
+/* === MOBILE TEXT ALIGNMENT MODIFICATIONS END === */
+
+
+/* --- Animation --- */
 .animate-on-scroll {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-  transition-delay: 0s;
+  transition-delay: 0s; /* Base delay, can be overridden by JS */
 }
 
 .animate-on-scroll.is-visible {
@@ -167,11 +227,23 @@
   transform: translateY(0);
 }
 
+/* Specific elements using the base animation */
 .featured-collections__main-title.animate-on-scroll,
 .featured-collections__subtitle.animate-on-scroll {
-  /* Uses base .animate-on-scroll settings */
+  /* Inherits base .animate-on-scroll styles */
 }
 
 .featured-collection-item.animate-on-scroll {
-  /* Stagger delay applied by JavaScript */
+  /* Stagger delay would typically be applied via JavaScript */
 }
+
+/* --- Page Width Utility (Included within container above, keep if used elsewhere) --- */
+/*
+.page-width {
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1200px;
+}
+*/
