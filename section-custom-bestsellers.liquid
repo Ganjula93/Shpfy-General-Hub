@@ -1,8 +1,9 @@
 {% comment %}
   Shopify Section: Custom Bestsellers
-  Description: Displays a collection of products, using a SwiperJS carousel
-               if more than 3 products are present in the selected collection.
-  Version: 2.1 (Animation fix for Swiper)
+  Description: Displays a collection of products, using a SwiperJS carousel.
+               Shows 1 product per slide on mobile, and 3 on tablet/desktop.
+               Uses dynamic pagination bullets.
+  Version: 2.8 (Locales block removed, hardcoded English strings in schema)
 
   Dependencies:
   - section-custom-bestsellers.css (section-specific CSS)
@@ -25,8 +26,6 @@
   assign products_to_show_in_grid = 3
   assign image_aspect_ratio = section.settings.image_aspect_ratio | default: 'portrait'
 
-  assign text_animation_class_for_header = "animate-on-scroll"
-
   assign total_products = 0
   if products_collection.products.size > 0
     assign total_products = products_collection.products.size
@@ -48,10 +47,12 @@
   <div class="custom-bestsellers__top-background">
     <div class="page-width custom-bestsellers__header-content">
       {% if section_headline != blank %}
-        <h2 class="custom-bestsellers__main-headline {{ text_animation_class_for_header }}">{{ section_headline | escape }}</h2>
+        {% # Removed {{ text_animation_class_for_header }} from the class list below # %}
+        <h2 class="custom-bestsellers__main-headline">{{ section_headline | escape }}</h2>
       {% endif %}
       {% if section_subline != blank %}
-        <div class="custom-bestsellers__subline rte {{ text_animation_class_for_header }}">{{ section_subline }}</div>
+        {% # Removed {{ text_animation_class_for_header }} from the class list below # %}
+        <div class="custom-bestsellers__subline rte">{{ section_subline }}</div>
       {% endif %}
     </div>
   </div>
@@ -68,7 +69,7 @@
             <div class="swiper-wrapper">
               {% for product in products_collection.products %}
                 <div class="swiper-slide custom-bestsellers__swiper-slide">
-                  {% # Product card - NO text_animation_class here for items in carousel # %}
+                  {% # Product card - NO scroll animation class here for items in carousel # %}
                   <div class="custom-bestsellers__product-card">
                     <a href="{{ product.url | within: products_collection }}" class="custom-bestsellers__product-link">
                       <div class="custom-bestsellers__image-wrapper custom-bestsellers__image-wrapper--{{ image_aspect_ratio }}">
@@ -116,11 +117,12 @@
           {% comment %} End Swiper Carousel Structure {% endcomment %}
 
         {% else %}
-          {% comment %} Fallback to Grid Display (3 or fewer products) {% endcomment %}
+          {% comment %} Fallback to Grid Display (e.g., 3 or fewer products) {% endcomment %}
           <div class="custom-bestsellers__grid">
             {% for product in products_collection.products limit: products_to_show_in_grid %}
-              {% # Product card - WITH text_animation_class for items in grid # %}
-              <div class="custom-bestsellers__product-card {{ text_animation_class_for_header }}">
+              {% # Product card - Keep animation class here for grid items if desired # %}
+              {% # Note: If scroll animation JS is broken, this won't work either # %}
+              <div class="custom-bestsellers__product-card animate-on-scroll">
                 <a href="{{ product.url | within: products_collection }}" class="custom-bestsellers__product-link">
                   <div class="custom-bestsellers__image-wrapper custom-bestsellers__image-wrapper--{{ image_aspect_ratio }}">
                     {% if product.featured_media %}
@@ -199,27 +201,37 @@
   // Function to initialize Swiper
   function initializeBestsellersSwiper(sectionId) {
     const sectionElement = document.getElementById(`shopify-section-${sectionId}`);
-    if (!sectionElement) return;
+    if (!sectionElement) {
+      console.log('Bestsellers section element not found for ID:', sectionId);
+      return;
+    }
 
     const swiperContainer = sectionElement.querySelector(`.custom-bestsellers-swiper-${sectionId}`);
 
     if (swiperContainer) {
-      // Check if a Swiper instance already exists and destroy it to prevent duplicates
       if (swiperContainer.swiper) {
         swiperContainer.swiper.destroy(true, true);
       }
 
       const swiper = new Swiper(swiperContainer, {
         loop: false,
-        slidesPerView: 1,
-        spaceBetween: 15,
+        slidesPerView: 1, // Default to 1 slide per view (for mobile)
+        spaceBetween: 15,  // Default space between slides for mobile
+
         breakpoints: {
-          768: { slidesPerView: 2, spaceBetween: 25 },
-          1024: { slidesPerView: 3, spaceBetween: 35 }
+          768: { // Tablet: 768px and up
+            slidesPerView: 3,
+            spaceBetween: 25
+          },
+          1024: { // Desktop: 1024px and up
+            slidesPerView: 3,
+            spaceBetween: 35
+          }
         },
         pagination: {
           el: sectionElement.querySelector(`.custom-bestsellers__swiper-pagination-${sectionId}`),
           clickable: true,
+          dynamicBullets: true, // Added for dynamic pagination
         },
         navigation: {
           nextEl: sectionElement.querySelector(`.custom-bestsellers__swiper-button-next-${sectionId}`),
@@ -231,30 +243,18 @@
           paginationBulletMessage: 'Go to slide {{index}}',
         },
         preloadImages: false,
-        lazy: { // Swiper's own lazy loading, if you add 'swiper-lazy' class to images
+        lazy: {
             loadPrevNext: true,
-            // elementClass: 'swiper-lazy', // Default
         },
-        watchSlidesProgress: true, // Good for lazy loading and some effects
+        watchSlidesProgress: true,
         on: {
           init: function () {
             swiperContainer.classList.add('swiper-initialized');
-            // If you want to animate slides as they come into view with Swiper
-            // you might add 'is-visible' to initially visible slides here.
-            // For example, this.slides.forEach(slide => { if(slide.isActive) slide.classList.add('is-visible')});
-            // More robust would be to use slideChangeTransitionEnd event.
           },
-          // Example: Add 'is-visible' class to active slide after transition
-          // slideChangeTransitionEnd: function() {
-          //   this.slides.forEach(slide => slide.classList.remove('is-visible'));
-          //   const activeSlide = this.slides[this.activeIndex];
-          //   if (activeSlide) {
-          //     activeSlide.querySelector('.custom-bestsellers__product-card').classList.add('is-visible');
-          //     // Potentially add to nearby slides as well if you want them to animate in early
-          //   }
-          // }
         }
       });
+    } else {
+      console.log('Swiper container not found for section:', sectionId);
     }
   }
 
@@ -266,17 +266,18 @@
     if (event.detail.sectionId === '{{ section_id_value }}') {
       setTimeout(function() {
         initializeBestsellersSwiper(event.detail.sectionId);
-      }, 0);
+      }, 150);
     }
   });
 
   document.addEventListener('shopify:section:select', function(event) {
     if (event.detail.sectionId === '{{ section_id_value }}') {
-       setTimeout(function() {
+      setTimeout(function() {
         initializeBestsellersSwiper(event.detail.sectionId);
-      }, 0);
+      }, 150);
     }
   });
+
 </script>
 
 {% schema %}
@@ -287,92 +288,47 @@
   "settings": [
     {
       "type": "header",
-      "content": "t:sections.custom_bestsellers.settings.header_titles.content"
+      "content": "Section Titles"
     },
     {
       "type": "text",
       "id": "headline",
-      "label": "t:sections.custom_bestsellers.settings.headline.label",
+      "label": "Headline",
       "default": "Loved by You"
     },
     {
       "type": "richtext",
       "id": "subline",
-      "label": "t:sections.custom_bestsellers.settings.subline.label",
+      "label": "Subline",
       "default": "<p>These favorites don’t stay in stock for long</p>"
     },
     {
       "type": "header",
-      "content": "t:sections.custom_bestsellers.settings.header_product_source.content"
+      "content": "Product Source"
     },
     {
       "type": "collection",
       "id": "products_collection",
-      "label": "t:sections.custom_bestsellers.settings.products_collection.label"
+      "label": "Select Collection"
     },
     {
       "type": "select",
       "id": "image_aspect_ratio",
-      "label": "t:sections.custom_bestsellers.settings.image_aspect_ratio.label",
+      "label": "Image Aspect Ratio",
       "options": [
-        { "value": "square", "label": "t:sections.custom_bestsellers.settings.image_aspect_ratio.options.square.label" },
-        { "value": "portrait", "label": "t:sections.custom_bestsellers.settings.image_aspect_ratio.options.portrait.label" },
-        { "value": "landscape", "label": "t:sections.custom_bestsellers.settings.image_aspect_ratio.options.landscape.label" }
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (e.g., 3:3.5 or 2:3)" },
+        { "value": "landscape", "label": "Landscape (e.g., 4:3 or 16:9)" }
       ],
       "default": "portrait",
-      "info": "t:sections.custom_bestsellers.settings.image_aspect_ratio.info"
+      "info": "Helps maintain consistent image heights. Choose based on your typical product imagery."
     }
   ],
   "presets": [
     {
-      "name": "t:sections.custom_bestsellers.presets.name"
+      "name": "Custom Bestsellers"
     }
-  ],
-  "locales": {
-    "en": {
-      "sections": {
-        "custom_bestsellers": {
-          "settings": {
-            "header_titles": { "content": "Section Titles" },
-            "headline": { "label": "Headline" },
-            "subline": { "label": "Subline" },
-            "header_product_source": { "content": "Product Source" },
-            "products_collection": { "label": "Select Collection" },
-            "image_aspect_ratio": {
-              "label": "Image Aspect Ratio",
-              "options": {
-                "square": { "label": "Square (1:1)" },
-                "portrait": { "label": "Portrait (e.g., 3:3.5 or 2:3)" },
-                "landscape": { "label": "Landscape (e.g., 4:3 or 16:9)" }
-              },
-              "info": "Helps maintain consistent image heights. Choose based on your typical product imagery."
-            }
-          }, "presets": { "name": "Custom Bestsellers" }
-        }
-      }
-    },
-    "de": {
-      "sections": {
-        "custom_bestsellers": {
-          "settings": {
-            "header_titles": { "content": "Abschnittstitel" },
-            "headline": { "label": "Überschrift" },
-            "subline": { "label": "Unterüberschrift" },
-            "header_product_source": { "content": "Produktquelle" },
-            "products_collection": { "label": "Kollektion auswählen" },
-            "image_aspect_ratio": {
-              "label": "Bildseitenverhältnis",
-              "options": {
-                "square": { "label": "Quadratisch (1:1)" },
-                "portrait": { "label": "Hochformat (z.B. 3:3.5 oder 2:3)" },
-                "landscape": { "label": "Querformat (z.B. 4:3 oder 16:9)" }
-              },
-              "info": "Hilft, konsistente Bildhöhen beizubehalten. Wählen Sie basierend auf Ihrer typischen Produktbildsprache."
-            }
-          }, "presets": { "name": "Individuelle Bestseller" }
-        }
-      }
-    }
-  }
+  ]
+  /* "locales" block completely removed */
 }
 {% endschema %}
