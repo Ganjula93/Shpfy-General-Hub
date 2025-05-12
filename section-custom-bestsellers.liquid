@@ -1,0 +1,378 @@
+{% comment %}
+  Shopify Section: Custom Bestsellers
+  Description: Displays a collection of products, using a SwiperJS carousel
+               if more than 3 products are present in the selected collection.
+  Version: 2.1 (Animation fix for Swiper)
+
+  Dependencies:
+  - section-custom-bestsellers.css (section-specific CSS)
+  - swiper-bundle.min.css (SwiperJS CSS, expected in theme assets)
+  - swiper-bundle.min.js (SwiperJS JS, expected in theme assets)
+{% endcomment %}
+
+{{ 'section-custom-bestsellers.css' | asset_url | stylesheet_tag }}
+{{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
+
+{% # Check if we have the custom fonts defined, otherwise use fallbacks for font variables # %}
+{% assign heading_font_family = settings.heading_font_family | default: 'Arial, sans-serif' %}
+{% assign body_font_family = settings.body_font_family | default: 'Arial, sans-serif' %}
+
+{%- liquid
+  assign section_id_value = section.id
+  assign section_headline = section.settings.headline
+  assign section_subline = section.settings.subline
+  assign products_collection = section.settings.products_collection
+  assign products_to_show_in_grid = 3
+  assign image_aspect_ratio = section.settings.image_aspect_ratio | default: 'portrait'
+
+  assign text_animation_class_for_header = "animate-on-scroll"
+
+  assign total_products = 0
+  if products_collection.products.size > 0
+    assign total_products = products_collection.products.size
+  endif
+
+  assign show_carousel = false
+  if total_products > products_to_show_in_grid
+    assign show_carousel = true
+  endif
+-%}
+
+<div id="shopify-section-{{ section_id_value }}"
+     class="custom-bestsellers-section"
+     data-section-id="{{ section_id_value }}"
+     data-section-type="custom-bestsellers"
+     style="--heading-font-family: {{ heading_font_family }}; --body-font-family: {{ body_font_family }};">
+
+  {% # Top part of the section with headline and subline # %}
+  <div class="custom-bestsellers__top-background">
+    <div class="page-width custom-bestsellers__header-content">
+      {% if section_headline != blank %}
+        <h2 class="custom-bestsellers__main-headline {{ text_animation_class_for_header }}">{{ section_headline | escape }}</h2>
+      {% endif %}
+      {% if section_subline != blank %}
+        <div class="custom-bestsellers__subline rte {{ text_animation_class_for_header }}">{{ section_subline }}</div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% # Bottom part of the section with product display (grid or carousel) # %}
+  <div class="custom-bestsellers__bottom-background">
+    <div class="page-width">
+      {% if products_collection != blank and total_products > 0 %}
+
+        {% # Conditional rendering: Carousel or Grid # %}
+        {% if show_carousel %}
+          {% comment %} Start Swiper Carousel Structure {% endcomment %}
+          <div class="swiper custom-bestsellers-swiper-{{ section_id_value }}">
+            <div class="swiper-wrapper">
+              {% for product in products_collection.products %}
+                <div class="swiper-slide custom-bestsellers__swiper-slide">
+                  {% # Product card - NO text_animation_class here for items in carousel # %}
+                  <div class="custom-bestsellers__product-card">
+                    <a href="{{ product.url | within: products_collection }}" class="custom-bestsellers__product-link">
+                      <div class="custom-bestsellers__image-wrapper custom-bestsellers__image-wrapper--{{ image_aspect_ratio }}">
+                        {% if product.featured_media %}
+                          {{ product.featured_media | image_url: width: 500 | image_tag:
+                            loading: 'lazy',
+                            class: 'custom-bestsellers__product-image',
+                            widths: '200, 300, 400, 500, 600',
+                            alt: product.featured_media.alt | default: product.title | escape
+                          }}
+                        {% else %}
+                          <div class="custom-bestsellers__placeholder-image arched-image">
+                            {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'placeholder-svg' }}
+                          </div>
+                        {% endif %}
+                      </div>
+                      <div class="custom-bestsellers__product-info">
+                        {% if product.title != blank %}
+                          <h3 class="custom-bestsellers__product-title">{{ product.title | escape }}</h3>
+                        {% endif %}
+                        {% if product.description != blank %}
+                          <div class="custom-bestsellers__product-description rte">
+                            {{ product.description | strip_html | truncatewords: 15, "..." }}
+                          </div>
+                        {% endif %}
+                        <div class="custom-bestsellers__product-price">
+                          {{ product.price | money }}
+                          {% if product.compare_at_price > product.price %}
+                            <s class="custom-bestsellers__compare-at-price">{{ product.compare_at_price | money }}</s>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+            {% # Swiper Pagination (dots) # %}
+            <div class="swiper-pagination custom-bestsellers__swiper-pagination-{{ section_id_value }}"></div>
+
+            {% # Swiper Navigation Buttons (arrows) # %}
+            <div class="swiper-button-prev custom-bestsellers__swiper-button-prev-{{ section_id_value }}"></div>
+            <div class="swiper-button-next custom-bestsellers__swiper-button-next-{{ section_id_value }}"></div>
+          </div>
+          {% comment %} End Swiper Carousel Structure {% endcomment %}
+
+        {% else %}
+          {% comment %} Fallback to Grid Display (3 or fewer products) {% endcomment %}
+          <div class="custom-bestsellers__grid">
+            {% for product in products_collection.products limit: products_to_show_in_grid %}
+              {% # Product card - WITH text_animation_class for items in grid # %}
+              <div class="custom-bestsellers__product-card {{ text_animation_class_for_header }}">
+                <a href="{{ product.url | within: products_collection }}" class="custom-bestsellers__product-link">
+                  <div class="custom-bestsellers__image-wrapper custom-bestsellers__image-wrapper--{{ image_aspect_ratio }}">
+                    {% if product.featured_media %}
+                      {{ product.featured_media | image_url: width: 500 | image_tag:
+                        loading: 'lazy',
+                        class: 'custom-bestsellers__product-image',
+                        widths: '200, 300, 400, 500, 600',
+                        alt: product.featured_media.alt | default: product.title | escape
+                      }}
+                    {% else %}
+                      <div class="custom-bestsellers__placeholder-image arched-image">
+                        {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'placeholder-svg' }}
+                      </div>
+                    {% endif %}
+                  </div>
+                  <div class="custom-bestsellers__product-info">
+                    {% if product.title != blank %}
+                      <h3 class="custom-bestsellers__product-title">{{ product.title | escape }}</h3>
+                    {% endif %}
+                    {% if product.description != blank %}
+                      <div class="custom-bestsellers__product-description rte">
+                        {{ product.description | strip_html | truncatewords: 15, "..." }}
+                      </div>
+                    {% endif %}
+                    <div class="custom-bestsellers__product-price">
+                      {{ product.price | money }}
+                      {% if product.compare_at_price > product.price %}
+                        <s class="custom-bestsellers__compare-at-price">{{ product.compare_at_price | money }}</s>
+                      {% endif %}
+                    </div>
+                  </div>
+                </a>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+      {% else %}
+        {% # Placeholder content for Shopify Theme Editor if no collection is selected or collection is empty # %}
+        {% if request.design_mode %}
+          <div class="custom-bestsellers__grid--empty">
+            <p>Please select a collection in the section settings to display products. Ensure the collection has products.</p>
+            <div style="display:flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+              {% for i in (1..products_to_show_in_grid) %}
+              <div class="custom-bestsellers__product-card--placeholder" style="width: 250px; border: 1px solid #ddd; border-radius: 12px; overflow:hidden;">
+                  <div class="custom-bestsellers__placeholder-image arched-image" style="width:100%; height:280px; background:#f0f0f0; display:flex; align-items:center; justify-content:center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="50" height="50" fill="rgba(0,0,0,0.1)"><path d="M16 2H8C4.691 2 2 4.691 2 8v13a1 1 0 0 0 1 1h13c3.309 0 6-2.691 6-6V8c0-3.309-2.691-6-6-6zm4 14c0 2.206-1.794 4-4 4H4V8c0-2.206 1.794-4 4-4h8c2.206 0 4 1.794 4 4v8z"/><path d="M11 10.414C11 10.158 10.781 10 10.53 10H7.47C7.219 10 7 10.158 7 10.414v5.172C7 15.842 7.219 16 7.47 16h3.06c.251 0 .47-.158.47-.414v-5.172zm-1 4.586H8v-3h2v3zM17 10.414C17 10.158 16.781 10 16.53 10h-3.06c-.251 0-.47.158-.47.414v5.172c0 .256.219.414.47.414h3.06c.251 0 .47-.158.47-.414v-5.172zm-1 4.586h-2v-3h2v3zM12 6h-2v2h2V6z"/></svg>
+                  </div>
+                  <div style="padding:15px; background:white;">
+                    <h3 style="margin-top:10px; height: 1.2em; background: #f0f0f0; border-radius: 4px;"></h3>
+                    <p style="font-size:0.9em; height: 2.7em; background: #f0f0f0; border-radius: 4px; margin-top: 5px;"></p>
+                    <p style="font-weight:bold; height: 1.15em; background: #f0f0f0; border-radius: 4px; margin-top: 10px;"></p>
+                  </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
+  {% # SVG definition for image clipping, if used by CSS # %}
+  <svg width="0" height="0" style="position:absolute; left: -100%; top: -100%;" aria-hidden="true">
+    <defs>
+      <clipPath id="arched-top-clip-path-bestsellers-{{ section_id_value }}" clipPathUnits="objectBoundingBox">
+        <path d="M0,1 L0,0.1 Q0.5,0 1,0.1 L1,1 Z" />
+      </clipPath>
+    </defs>
+  </svg>
+</div>
+
+{% # JavaScript for Swiper Initialization # %}
+<script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer="defer"></script>
+<script>
+  // Function to initialize Swiper
+  function initializeBestsellersSwiper(sectionId) {
+    const sectionElement = document.getElementById(`shopify-section-${sectionId}`);
+    if (!sectionElement) return;
+
+    const swiperContainer = sectionElement.querySelector(`.custom-bestsellers-swiper-${sectionId}`);
+
+    if (swiperContainer) {
+      // Check if a Swiper instance already exists and destroy it to prevent duplicates
+      if (swiperContainer.swiper) {
+        swiperContainer.swiper.destroy(true, true);
+      }
+
+      const swiper = new Swiper(swiperContainer, {
+        loop: false,
+        slidesPerView: 1,
+        spaceBetween: 15,
+        breakpoints: {
+          768: { slidesPerView: 2, spaceBetween: 25 },
+          1024: { slidesPerView: 3, spaceBetween: 35 }
+        },
+        pagination: {
+          el: sectionElement.querySelector(`.custom-bestsellers__swiper-pagination-${sectionId}`),
+          clickable: true,
+        },
+        navigation: {
+          nextEl: sectionElement.querySelector(`.custom-bestsellers__swiper-button-next-${sectionId}`),
+          prevEl: sectionElement.querySelector(`.custom-bestsellers__swiper-button-prev-${sectionId}`),
+        },
+        a11y: {
+          prevSlideMessage: 'Previous slide',
+          nextSlideMessage: 'Next slide',
+          paginationBulletMessage: 'Go to slide {{index}}',
+        },
+        preloadImages: false,
+        lazy: { // Swiper's own lazy loading, if you add 'swiper-lazy' class to images
+            loadPrevNext: true,
+            // elementClass: 'swiper-lazy', // Default
+        },
+        watchSlidesProgress: true, // Good for lazy loading and some effects
+        on: {
+          init: function () {
+            swiperContainer.classList.add('swiper-initialized');
+            // If you want to animate slides as they come into view with Swiper
+            // you might add 'is-visible' to initially visible slides here.
+            // For example, this.slides.forEach(slide => { if(slide.isActive) slide.classList.add('is-visible')});
+            // More robust would be to use slideChangeTransitionEnd event.
+          },
+          // Example: Add 'is-visible' class to active slide after transition
+          // slideChangeTransitionEnd: function() {
+          //   this.slides.forEach(slide => slide.classList.remove('is-visible'));
+          //   const activeSlide = this.slides[this.activeIndex];
+          //   if (activeSlide) {
+          //     activeSlide.querySelector('.custom-bestsellers__product-card').classList.add('is-visible');
+          //     // Potentially add to nearby slides as well if you want them to animate in early
+          //   }
+          // }
+        }
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    initializeBestsellersSwiper('{{ section_id_value }}');
+  });
+
+  document.addEventListener('shopify:section:load', function(event) {
+    if (event.detail.sectionId === '{{ section_id_value }}') {
+      setTimeout(function() {
+        initializeBestsellersSwiper(event.detail.sectionId);
+      }, 0);
+    }
+  });
+
+  document.addEventListener('shopify:section:select', function(event) {
+    if (event.detail.sectionId === '{{ section_id_value }}') {
+       setTimeout(function() {
+        initializeBestsellersSwiper(event.detail.sectionId);
+      }, 0);
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Custom Bestsellers",
+  "tag": "section",
+  "class": "section-custom-bestsellers",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.custom_bestsellers.settings.header_titles.content"
+    },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "t:sections.custom_bestsellers.settings.headline.label",
+      "default": "Loved by You"
+    },
+    {
+      "type": "richtext",
+      "id": "subline",
+      "label": "t:sections.custom_bestsellers.settings.subline.label",
+      "default": "<p>These favorites don’t stay in stock for long</p>"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.custom_bestsellers.settings.header_product_source.content"
+    },
+    {
+      "type": "collection",
+      "id": "products_collection",
+      "label": "t:sections.custom_bestsellers.settings.products_collection.label"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "t:sections.custom_bestsellers.settings.image_aspect_ratio.label",
+      "options": [
+        { "value": "square", "label": "t:sections.custom_bestsellers.settings.image_aspect_ratio.options.square.label" },
+        { "value": "portrait", "label": "t:sections.custom_bestsellers.settings.image_aspect_ratio.options.portrait.label" },
+        { "value": "landscape", "label": "t:sections.custom_bestsellers.settings.image_aspect_ratio.options.landscape.label" }
+      ],
+      "default": "portrait",
+      "info": "t:sections.custom_bestsellers.settings.image_aspect_ratio.info"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.custom_bestsellers.presets.name"
+    }
+  ],
+  "locales": {
+    "en": {
+      "sections": {
+        "custom_bestsellers": {
+          "settings": {
+            "header_titles": { "content": "Section Titles" },
+            "headline": { "label": "Headline" },
+            "subline": { "label": "Subline" },
+            "header_product_source": { "content": "Product Source" },
+            "products_collection": { "label": "Select Collection" },
+            "image_aspect_ratio": {
+              "label": "Image Aspect Ratio",
+              "options": {
+                "square": { "label": "Square (1:1)" },
+                "portrait": { "label": "Portrait (e.g., 3:3.5 or 2:3)" },
+                "landscape": { "label": "Landscape (e.g., 4:3 or 16:9)" }
+              },
+              "info": "Helps maintain consistent image heights. Choose based on your typical product imagery."
+            }
+          }, "presets": { "name": "Custom Bestsellers" }
+        }
+      }
+    },
+    "de": {
+      "sections": {
+        "custom_bestsellers": {
+          "settings": {
+            "header_titles": { "content": "Abschnittstitel" },
+            "headline": { "label": "Überschrift" },
+            "subline": { "label": "Unterüberschrift" },
+            "header_product_source": { "content": "Produktquelle" },
+            "products_collection": { "label": "Kollektion auswählen" },
+            "image_aspect_ratio": {
+              "label": "Bildseitenverhältnis",
+              "options": {
+                "square": { "label": "Quadratisch (1:1)" },
+                "portrait": { "label": "Hochformat (z.B. 3:3.5 oder 2:3)" },
+                "landscape": { "label": "Querformat (z.B. 4:3 oder 16:9)" }
+              },
+              "info": "Hilft, konsistente Bildhöhen beizubehalten. Wählen Sie basierend auf Ihrer typischen Produktbildsprache."
+            }
+          }, "presets": { "name": "Individuelle Bestseller" }
+        }
+      }
+    }
+  }
+}
+{% endschema %}

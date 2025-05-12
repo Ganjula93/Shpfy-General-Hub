@@ -1,0 +1,375 @@
+/* section-custom-bestsellers.css */
+
+/* ==========================================================================
+   Base Section Styles
+   ========================================================================== */
+
+.custom-bestsellers-section {
+  padding-top: 0;
+  padding-bottom: 0;
+  /* Ensure this class is on the root element of your section in Liquid */
+}
+
+.custom-bestsellers__top-background {
+  background-color: #EEE9DA; /* Light beige background for the top area */
+  padding-top: 50px;
+  padding-bottom: 40px;
+  text-align: center;
+}
+
+.custom-bestsellers__bottom-background {
+  background-color: #FFFFFF; /* White background for the product display area */
+  padding-top: 50px;
+  padding-bottom: 60px;
+}
+
+/* For Swiper navigation buttons to be positioned relative to this container */
+.custom-bestsellers-section .page-width {
+  position: relative;
+}
+
+/* ==========================================================================
+   Typography & Content Styles
+   ========================================================================== */
+
+.custom-bestsellers__main-headline {
+  font-size: 2.4em;
+  margin-bottom: 0.6em;
+  font-family: var(--heading-font-family, 'Avigea', sans-serif); /* Uses custom font variable or fallback */
+  color: #4a3b31; /* Dark brown text color */
+  font-weight: 600;
+}
+
+.custom-bestsellers__subline {
+  font-size: 1.15em;
+  margin-bottom: 0;
+  max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: var(--body-font-family, 'Lustria', serif); /* Uses custom font variable or fallback */
+  color: #605147; /* Medium brown text color */
+}
+.custom-bestsellers__subline p {
+  margin-bottom: 0; /* Removes default paragraph margin if richtext adds it */
+}
+
+/* ==========================================================================
+   Product Grid (Fallback for < 4 products)
+   ========================================================================== */
+
+.custom-bestsellers__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid columns */
+  gap: 35px; /* Space between grid items */
+}
+
+@media (min-width: 769px) { /* On larger screens, fix to 3 columns */
+  .custom-bestsellers__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ==========================================================================
+   Product Card Styles (Used by both Grid and Swiper)
+   ========================================================================== */
+
+.custom-bestsellers__product-card {
+  border-radius: 12px;
+  overflow: hidden; /* Ensures content respects border-radius and clip-path */
+  text-align: left;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1); /* Soft shadow for depth */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effect */
+  display: flex;
+  flex-direction: column;
+  background-color: #FFFFFF; /* Card background */
+  height: 100%; /* Ensures cards in a row/slide try to maintain same height if content varies */
+}
+
+.custom-bestsellers__product-card:hover {
+  transform: translateY(-6px); /* Slight lift on hover */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15); /* Enhanced shadow on hover */
+}
+
+.custom-bestsellers__product-link {
+  text-decoration: none;
+  color: #4a3b31; /* Default text color for content inside link */
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Allows link to fill the card */
+  height: 100%;
+}
+
+.custom-bestsellers__image-wrapper {
+  position: relative;
+  width: 100%;
+  background-color: #EEE9DA; /* Fallback background for image area */
+  border-top-left-radius: 12px; /* Matches card's border-radius */
+  border-top-right-radius: 12px; /* Matches card's border-radius */
+  overflow: hidden; /* Critical for clip-path to work */
+  display: block !important; /* Overriding potential theme conflicts */
+
+  /* Applied clip-path for a custom shape on the image */
+  /* This creates a shape with a flat bottom and a pointed top center */
+  clip-path: polygon(0% 100%, 0% 20%, 50% 0%, 100% 20%, 100% 100%);
+  -webkit-clip-path: polygon(0% 100%, 0% 20%, 50% 0%, 100% 20%, 100% 100%);
+}
+
+/* Aspect ratio handling using padding-bottom trick (older method) */
+.custom-bestsellers__image-wrapper::before {
+  content: "";
+  display: block !important;
+  width: 100%;
+}
+.custom-bestsellers__image-wrapper--portrait::before {
+  padding-bottom: 116.67% !important; /* Approx 3:3.5 ratio */
+}
+.custom-bestsellers__image-wrapper--square::before {
+  padding-bottom: 100% !important; /* 1:1 ratio */
+}
+.custom-bestsellers__image-wrapper--landscape::before {
+  padding-bottom: 75% !important; /* 4:3 ratio */
+}
+
+/* Aspect ratio handling using modern CSS 'aspect-ratio' property */
+/* This will be preferred by modern browsers over the padding trick if supported */
+.custom-bestsellers__image-wrapper--portrait { aspect-ratio: 3 / 3.5; }
+.custom-bestsellers__image-wrapper--square { aspect-ratio: 1 / 1; }
+.custom-bestsellers__image-wrapper--landscape { aspect-ratio: 4 / 3; }
+
+.custom-bestsellers__product-image {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  object-fit: cover !important; /* Ensures image covers the area, may crop */
+  object-position: center !important; /* Centers the image within its frame */
+  z-index: 1 !important; /* Ensures image is above any background color */
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.custom-bestsellers__placeholder-image.arched-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* Below actual product image if it loads */
+}
+.custom-bestsellers__placeholder-image.arched-image .placeholder-svg {
+  width: 50%;
+  height: 50%;
+  max-width: 80px; /* Limits size of placeholder icon */
+  opacity: 0.5;
+}
+
+.custom-bestsellers__product-info {
+  padding: 20px 25px 25px;
+  background-color: #FFFFFF; /* Ensures this part is white even if card bg changes */
+  border-bottom-left-radius: 12px; /* Matches card's border-radius */
+  border-bottom-right-radius: 12px; /* Matches card's border-radius */
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Takes remaining space in card */
+  position: relative; /* For z-index stacking if needed */
+  z-index: 2; /* Above image wrapper if there were overlaps */
+}
+
+.custom-bestsellers__product-title {
+  font-family: var(--heading-font-family, 'Avigea', sans-serif);
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 0.6em;
+  color: #4a3b31;
+}
+
+.custom-bestsellers__product-description {
+  font-family: var(--body-font-family, 'Lustria', serif);
+  font-size: 0.9em;
+  line-height: 1.5;
+  margin-bottom: 1.2em;
+  color: #605147;
+  height: 4.5em; /* Approx 3 lines of text, adjust as needed */
+  overflow: hidden; /* Hides text that overflows the height */
+  text-overflow: ellipsis; /* Adds "..." but often needs more complex setup for multi-line */
+  flex-grow: 1; /* Allows description to take available space before price pushes it */
+}
+.custom-bestsellers__product-description p {
+  margin: 0; /* Remove default paragraph margins */
+}
+
+.custom-bestsellers__product-price {
+  font-family: var(--heading-font-family, 'Avigea', sans-serif);
+  font-size: 1.15em;
+  font-weight: bold;
+  color: #4a3b31;
+  margin-top: auto; /* Pushes price to the bottom of the card info area */
+}
+.custom-bestsellers__compare-at-price {
+  margin-left: 8px;
+  color: #888; /* Lighter color for compare-at price */
+  font-weight: normal;
+  font-size: 0.9em;
+  text-decoration: line-through; /* Standard styling for compare price */
+}
+
+/* ==========================================================================
+   Empty State / Placeholder (Design Mode in Shopify Editor)
+   ========================================================================== */
+
+.custom-bestsellers__grid--empty {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+.custom-bestsellers__product-card--placeholder {
+  /* Basic styling for placeholder cards in editor */
+}
+
+
+/* ==========================================================================
+   SwiperJS Carousel Styles
+   ========================================================================== */
+
+/* Main Swiper container (targets the .swiper class within our section) */
+.custom-bestsellers-section .swiper {
+  width: 100%;
+  height: auto; /* Auto height based on content */
+  overflow: visible; /* Set to 'hidden' if nav buttons are inside and you don't want overflow */
+  padding-bottom: 50px; /* Space for pagination dots if positioned below */
+  position: relative; /* Needed for absolute positioning of nav buttons/pagination */
+}
+
+/* Individual Swiper slide */
+.custom-bestsellers-section .swiper-slide {
+  display: flex; /* Helps align card content if heights vary */
+  justify-content: center; /* Centers card in slide if slide is wider */
+  height: auto; /* Let product card define its height */
+  box-sizing: border-box;
+}
+
+/* Ensure product card within a slide takes up appropriate space */
+.custom-bestsellers-section .swiper-slide .custom-bestsellers__product-card {
+  width: 100%; /* Card takes full width of its slide container */
+  max-width: 400px; /* Optional: prevent cards from becoming too wide on large screens if only 1-2 slidesPerView */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Swiper Navigation Buttons (Prev/Next Arrows) */
+/* Targets Swiper's default classes, scoped within our section */
+.custom-bestsellers-section .swiper-button-prev,
+.custom-bestsellers-section .swiper-button-next {
+  color: #4a3b31; /* Arrow color */
+  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+  border-radius: 50%; /* Circular buttons */
+  width: 40px;  /* Custom size */
+  height: 40px; /* Custom size */
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
+  top: 50%; /* Position in vertical middle of the swiper container */
+  transform: translateY(-50%); /* Adjust for exact vertical centering */
+  margin-top: -25px; /* Adjust if pagination pushes swiper content down: -(half of pagination height) */
+}
+
+.custom-bestsellers-section .swiper-button-prev:hover,
+.custom-bestsellers-section .swiper-button-next:hover {
+  background-color: rgba(255, 255, 255, 1); /* Opaque white background on hover */
+}
+
+/* Styling the arrow icons themselves (Swiper uses ::after pseudo-elements) */
+.custom-bestsellers-section .swiper-button-prev::after,
+.custom-bestsellers-section .swiper-button-next::after {
+  font-size: 16px; /* Size of the arrow icon */
+  font-weight: bold;
+}
+
+/* Positioning the navigation buttons */
+.custom-bestsellers-section .swiper-button-prev {
+  left: -10px; /* Adjust to position outside or just inside the content area */
+}
+.custom-bestsellers-section .swiper-button-next {
+  right: -10px; /* Adjust to position outside or just inside the content area */
+}
+
+/* Responsive adjustments for navigation buttons */
+@media (max-width: 767px) {
+  .custom-bestsellers-section .swiper-button-prev,
+  .custom-bestsellers-section .swiper-button-next {
+    width: 34px; /* Smaller buttons on mobile */
+    height: 34px;
+    /* display: none; */ /* Uncomment to hide buttons on mobile */
+  }
+  .custom-bestsellers-section .swiper-button-prev::after,
+  .custom-bestsellers-section .swiper-button-next::after {
+    font-size: 14px; /* Smaller arrow icon on mobile */
+  }
+  .custom-bestsellers-section .swiper-button-prev {
+    left: 5px; /* Closer to edge on mobile */
+  }
+  .custom-bestsellers-section .swiper-button-next {
+    right: 5px; /* Closer to edge on mobile */
+  }
+  /* Adjust swiper padding if buttons are inside and causing overflow issues */
+  .custom-bestsellers-section .swiper {
+     padding-left: 0px;
+     padding-right: 0px;
+     /* overflow: hidden; */ /* If buttons are strictly inside and causing scroll */
+  }
+}
+@media (min-width: 1200px) { /* Example: slightly further out on very wide screens */
+    .custom-bestsellers-section .swiper-button-prev {
+        left: -20px;
+    }
+    .custom-bestsellers-section .swiper-button-next {
+        right: -20px;
+    }
+}
+
+
+/* Swiper Pagination Dots */
+/* Targets Swiper's default classes, scoped within our section */
+.custom-bestsellers-section .swiper-pagination {
+  position: absolute;
+  bottom: 10px !important; /* Position at the bottom of the swiper container */
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.custom-bestsellers-section .swiper-pagination-bullet {
+  background-color: #4a3b31; /* Color of inactive dots */
+  opacity: 0.4; /* Make inactive dots less prominent */
+  width: 10px; /* Size of dots */
+  height: 10px; /* Size of dots */
+  margin: 0 5px !important; /* Space between dots */
+  transition: opacity 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+  border-radius: 50%; /* Circular dots */
+}
+
+.custom-bestsellers-section .swiper-pagination-bullet-active {
+  opacity: 1; /* Full opacity for active dot */
+  background-color: #4a3b31; /* Color of the active dot */
+  transform: scale(1.2); /* Slightly larger active dot */
+}
+
+
+/* ==========================================================================
+   Scroll Animation Styles (from original user CSS)
+   ========================================================================== */
+
+.custom-bestsellers-section .animate-on-scroll {
+  opacity: 0; /* Start hidden */
+  transform: translateY(20px); /* Start slightly lower */
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.custom-bestsellers-section .animate-on-scroll.is-visible {
+  opacity: 1; /* Fade in */
+  transform: translateY(0); /* Slide up to original position */
+}
