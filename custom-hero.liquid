@@ -1,243 +1,263 @@
-{{ 'section-custom-hero.css' | asset_url | stylesheet_tag }}
-
 {%- liquid
-  assign hero_full_height = section.settings.hero_full_height
-  assign hero_text_align = section.settings.text_alignment
-  assign hero_overlay_opacity = section.settings.overlay_opacity | divided_by: 100.0
+  assign hero_full_height = section.settings.full_height
+  assign text_alignment = section.settings.text_alignment | default: 'center'
 
-  assign logo_image = section.settings.logo_image
-  assign logo_link = section.settings.logo_link | default: routes.root_url
-  assign logo_max_width = section.settings.logo_max_width
+  assign hero_classes = 'custom-hero-section'
+  if hero_full_height
+    assign hero_classes = hero_classes | append: ' custom-hero--full-height'
+  endif
 
-  assign hero_image = section.settings.hero_image
+  if text_alignment == 'left'
+    assign hero_classes = hero_classes | append: ' custom-hero__content--left'
+  elsif text_alignment == 'right'
+    assign hero_classes = hero_classes | append: ' custom-hero__content--right'
+  else
+    assign hero_classes = hero_classes | append: ' custom-hero__content--center'
+  endif
 
-  assign decorative_image = section.settings.decorative_image
-  assign decorative_image_max_width = section.settings.decorative_image_max_width
+  assign bg_type = section.settings.background_type
+  assign bg_image = section.settings.background_image
+  assign video_mp4 = section.settings.video_url_mp4
+  assign video_webm = section.settings.video_url_webm
+  assign video_fallback_image = section.settings.video_fallback_image
+  assign video_loop = section.settings.video_loop
+  
+  assign has_video_source = false
+  if video_mp4 != blank or video_webm != blank
+    assign has_video_source = true
+  endif
 
-  assign heading = section.settings.heading
-  assign subheading = section.settings.subheading
+  assign hero_styles = ''
+  if bg_type == 'image' and bg_image != blank
+    assign hero_styles = 'background-image: url("' | append: bg_image | image_url: width: 2400, height: 2400, crop: 'center' | append: '");'
+  elsif bg_type == 'video' and video_fallback_image != blank
+    assign hero_styles = 'background-image: url("' | append: video_fallback_image | image_url: width: 2400, height: 2400, crop: 'center' | append: '");'
+  endif
+
+  assign overlay_opacity_value = section.settings.overlay_opacity | default: 0.3
+
+  assign heading_text = section.settings.heading
+  assign subheading_text = section.settings.subheading
   assign button_label = section.settings.button_label
   assign button_link = section.settings.button_link
+  assign decorative_image = section.settings.decorative_image
+  assign decorative_image_max_width = section.settings.decorative_image_max_width | default: 100
+  assign hero_logo_image = section.settings.hero_logo_image
+  assign hero_logo_max_width = section.settings.hero_logo_max_width | default: 120
 
-  assign text_animation_class = "animate-on-scroll"
+  assign animate_elements = section.settings.enable_animation | default: false 
+  assign animation_class = ''
+  if animate_elements
+    assign animation_class = ' animate-on-scroll'
+  endif
 -%}
 
-<div id="shopify-section-{{ section.id }}"
-     class="custom-hero-section
-            {% if hero_full_height %} custom-hero--full-height{% endif %}
-            {% if hero_image == blank %} custom-hero--no-image{% endif %}"
-     style="--hero-overlay-opacity: {{ hero_overlay_opacity }};
-            {% if hero_image %}background-image: url('{{ hero_image | image_url: width: 2000, height: 1200, crop: 'center' }}');{% endif %}"
-     data-section-id="{{ section.id }}"
-     data-section-type="custom-hero-section">
+{{ 'section-custom-hero.css' | asset_url | stylesheet_tag }}
 
-  {% if logo_image != blank %}
-    <div class="custom-hero__logo-wrapper">
-      <a href="{{ logo_link }}" class="custom-hero__logo-link">
-        <img src="{{ logo_image | image_url: width: logo_max_width }}"
-             alt="{{ logo_image.alt | default: shop.name | escape }}"
-             class="custom-hero__logo-image"
-             width="{{ logo_max_width }}"
-             height="auto"
-             loading="eager">
-      </a>
+<section
+  class="{{ hero_classes }}"
+  style="{{ hero_styles }}"
+  data-section-id="{{ section.id }}"
+  data-section-type="custom-hero"
+  aria-label="{% if heading_text != blank %}{{ heading_text | escape }}{% else %}Hero section{% endif %}"
+>
+  {%- if bg_type == 'video' and has_video_source -%}
+    <div class="custom-hero__video-wrapper">
+      <video
+        class="custom-hero__video"
+        {% if video_fallback_image != blank %}poster="{{ video_fallback_image | image_url: width: 1920 }}"{% endif %}
+        autoplay
+        muted
+        playsinline
+        {% if video_loop %}loop{% endif %}
+        aria-hidden="true"
+      >
+        {%- if video_mp4 != blank -%}
+          <source src="{{ video_mp4 }}" type="video/mp4">
+        {%- endif -%}
+        {%- if video_webm != blank -%}
+          <source src="{{ video_webm }}" type="video/webm">
+        {%- endif -%}
+        Your browser does not support the video tag.
+      </video>
     </div>
-  {% endif %}
+  {%- elsif bg_type == 'image' and bg_image != blank -%}
+    {% comment %} 
+      The main background image is applied via inline style 'hero_styles' to the <section> tag.
+      If you prefer a dedicated div for the image (e.g., for different object-fit properties not available to background-image),
+      you could use this:
+      <div class="custom-hero__image-background" style="background-image: url('{{ bg_image | image_url: width: 2400, height: 2400, crop: 'center' }}');"></div>
+    {% endcomment %}
+  {%- endif -%}
 
-  <div class="custom-hero__overlay"></div>
+  {%- if overlay_opacity_value > 0 -%}
+    <div class="custom-hero__overlay" style="opacity: {{ overlay_opacity_value }};">&nbsp;</div>
+  {%- endif -%}
 
-  <div class="page-width custom-hero__content-wrapper custom-hero__content--{{ hero_text_align }}">
+  {%- if hero_logo_image != blank -%}
+    <div class="custom-hero__logo-wrapper">
+      <img
+        src="{{ hero_logo_image | image_url: width: hero_logo_max_width }}"
+        alt="{{ hero_logo_image.alt | default: shop.name | escape }} logo"
+        class="custom-hero__logo-image"
+        style="max-width: {{ hero_logo_max_width }}px;"
+        width="{{ hero_logo_max_width }}"
+        height="auto"
+        loading="lazy"
+      >
+    </div>
+  {%- endif -%}
+
+  <div class="custom-hero__content-wrapper">
     <div class="custom-hero__content">
-      {% if decorative_image != blank %}
-        <img src="{{ decorative_image | image_url: width: decorative_image_max_width }}"
-             alt="{{ decorative_image.alt | default: 'Decorative element' | escape }}"
-             class="custom-hero__decorative-image {{ text_animation_class }}"
-             style="max-width: {{ decorative_image_max_width }}px;"
-             width="{{ decorative_image_max_width }}"
-             height="auto"
-             loading="lazy">
-      {% endif %}
+      {%- if decorative_image != blank -%}
+        <img
+          src="{{ decorative_image | image_url: width: decorative_image_max_width }}"
+          alt="{{ decorative_image.alt | default: 'Decorative element' }}"
+          class="custom-hero__decorative-image{{ animation_class }}"
+          style="max-width: {{ decorative_image_max_width }}px;"
+          width="{{ decorative_image_max_width }}"
+          height="auto"
+          loading="lazy"
+        >
+      {%- endif -%}
 
-      {% if heading != blank %}
-        <h1 class="custom-hero__heading {{ text_animation_class }}">{{ heading | escape }}</h1>
-      {% endif %}
-      {% if subheading != blank %}
-        <div class="custom-hero__subheading rte {{ text_animation_class }}">{{ subheading }}</div>
-      {% endif %}
-      {% if button_label != blank and button_link != blank %}
-        <a href="{{ button_link }}" class="btn custom-hero__button {{ text_animation_class }}">
+      {%- if heading_text != blank -%}
+        <h2 class="custom-hero__heading{{ animation_class }}">{{ heading_text | escape }}</h2>
+      {%- endif -%}
+
+      {%- if subheading_text != blank -%}
+        <div class="custom-hero__subheading{{ animation_class }}">{{ subheading_text }}</div>
+      {%- endif -%}
+
+      {%- if button_label != blank -%}
+        <a
+          href="{{ button_link | default: '#' }}"
+          class="custom-hero__button btn{{ animation_class }}"
+        >
           {{ button_label | escape }}
         </a>
-      {% else %}
-        {% comment %} Shopify Admin Hint: Show a placeholder if button fields are not filled in editor {% endcomment %}
-        {% if request.design_mode %}
-          <div class="custom-hero__button--placeholder">
-            <p><em>Button will appear here once "Button Label" and "Button Link" are set.</em></p>
-          </div>
-        {% endif %}
-      {% endif %}
+      {%- elsif section.settings.button_label != blank and button_link == blank and request.design_mode -%}
+        <div class="custom-hero__button btn custom-hero__button--placeholder{{ animation_class }}">
+          <p>{{ button_label | escape }} (Button link not set)</p>
+        </div>
+      {%- endif -%}
     </div>
   </div>
-</div>
-
-{% comment %}
-  JavaScript for animations
-{% endcomment %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  if (!('IntersectionObserver' in window)) {
-    const elementsToAnimateFallback = document.querySelectorAll(
-      '#shopify-section-{{ section.id }} .animate-on-scroll'
-    );
-    elementsToAnimateFallback.forEach(el => {
-      if (el) {
-        el.classList.add('is-visible');
-      }
-    });
-    return;
-  }
-
-  const sectionId = '{{ section.id }}';
-  const sectionElement = document.getElementById('shopify-section-' + sectionId);
-
-  if (!sectionElement) {
-    return;
-  }
-
-  const elementsToAnimate = sectionElement.querySelectorAll('.animate-on-scroll');
-
-  if (elementsToAnimate.length === 0) {
-    return;
-  }
-
-  const observerOptions = {
-    root: null,
-    rootMargin: '0px 0px -50px 0px',
-    threshold: 0.1
-  };
-
-  const observerCallback = (entries, observer) => {
-    entries.forEach((entry, index) => {
-      if (entry.isIntersecting) {
-        const target = entry.target;
-        let delay = 0;
-
-        // Stagger delays for hero elements
-        if (target.classList.contains('custom-hero__heading')) {
-            delay = 100; // Heading after decorative image (decorative image gets 0ms)
-        } else if (target.classList.contains('custom-hero__subheading')) {
-          delay = 250; // Subheading after heading
-        } else if (target.classList.contains('custom-hero__button')) {
-          delay = 400; // Button after subheading
-        }
-        // Decorative image gets 0ms (default from CSS for .animate-on-scroll)
-
-        target.style.transitionDelay = `${delay}ms`;
-        target.classList.add('is-visible');
-        observer.unobserve(target);
-      }
-    });
-  };
-
-  const animationObserver = new IntersectionObserver(observerCallback, observerOptions);
-  elementsToAnimate.forEach(el => animationObserver.observe(el));
-});
-</script>
+</section>
 
 {% schema %}
 {
-  "name": "Custom Hero Section",
+  "name": "Custom Hero",
   "tag": "section",
-  "class": "section-custom-hero",
+  "class": "custom-hero-section-wrapper",
   "settings": [
     {
       "type": "header",
-      "content": "Layout & Background"
+      "content": "Background Settings"
+    },
+    {
+      "type": "select",
+      "id": "background_type",
+      "label": "Background Type",
+      "options": [
+        {
+          "value": "image",
+          "label": "Image"
+        },
+        {
+          "value": "video",
+          "label": "Video"
+        }
+      ],
+      "default": "image"
     },
     {
       "type": "image_picker",
-      "id": "hero_image",
+      "id": "background_image",
       "label": "Background Image",
-      "info": "Recommended size: 2000x1000px or larger for best quality."
+      "info": "Used if 'Background Type' is 'Image', or as a fallback if video is selected but 'Video Fallback Image' isn't set."
+    },
+    {
+      "type": "header",
+      "content": "Video Background Settings"
+    },
+    {
+      "type": "text",
+      "id": "video_url_mp4",
+      "label": "Video URL (MP4)",
+      "info": "Direct link to an MP4 video file. Used if 'Background Type' is 'Video'."
+    },
+    {
+      "type": "text",
+      "id": "video_url_webm",
+      "label": "Video URL (WebM - Optional)",
+      "info": "Optional. Direct link to a WebM video file for broader browser support."
+    },
+    {
+      "type": "image_picker",
+      "id": "video_fallback_image",
+      "label": "Video Fallback Image (Poster)",
+      "info": "Used as the video poster and as the CSS background for the section when 'Background Type' is 'Video'."
     },
     {
       "type": "checkbox",
-      "id": "hero_full_height",
-      "label": "Make section full screen height",
+      "id": "video_loop",
+      "label": "Loop video",
       "default": true
     },
     {
-      "type": "range",
-      "id": "overlay_opacity",
-      "min": 0,
-      "max": 90,
-      "step": 5,
-      "unit": "%",
-      "label": "Image overlay opacity",
-      "default": 30,
-      "info": "Set to 0 for no overlay. Helps with text readability."
-    },
-    {
       "type": "header",
-      "content": "Logo (Optional)"
+      "content": "Content Elements"
     },
     {
       "type": "image_picker",
-      "id": "logo_image",
-      "label": "Logo Image"
-    },
-    {
-      "type": "url",
-      "id": "logo_link",
-      "label": "Logo Link",
-      "info": "Defaults to homepage if left blank."
+      "id": "hero_logo_image",
+      "label": "Logo (Optional)",
+      "info": "Displayed near the top of the hero section."
     },
     {
       "type": "range",
-      "id": "logo_max_width",
+      "id": "hero_logo_max_width",
       "min": 50,
-      "max": 400, /* Increased max range */
+      "max": 300,
       "step": 10,
       "unit": "px",
       "label": "Logo Max Width",
-      "default": 180 /* Increased by 50% from 120 */
-    },
-    {
-      "type": "header",
-      "content": "Content"
+      "default": 120
     },
     {
       "type": "image_picker",
       "id": "decorative_image",
-      "label": "Decorative Image (Above Heading)"
+      "label": "Decorative Image (Optional)",
+      "info": "Displayed above the heading."
     },
     {
       "type": "range",
       "id": "decorative_image_max_width",
       "min": 30,
-      "max": 350, /* Increased max range */
-      "step": 5,
+      "max": 300,
+      "step": 10,
       "unit": "px",
       "label": "Decorative Image Max Width",
-      "default": 150 /* Increased by 50% from 100 */
+      "default": 100
     },
     {
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "default": "Boho Bags for the Wild & Woven Soul"
+      "default": "Your Hero Title"
     },
     {
       "type": "richtext",
       "id": "subheading",
       "label": "Subheading",
-      "default": "<p>Accessories that carry more than just your essentials</p>"
+      "default": "<p>Briefly describe your promotion or announcement.</p>"
     },
     {
       "type": "text",
       "id": "button_label",
-      "label": "Button Label",
-      "default": "Shop the Collection"
+      "label": "Button Label"
     },
     {
       "type": "url",
@@ -245,20 +265,46 @@ document.addEventListener('DOMContentLoaded', function() {
       "label": "Button Link"
     },
     {
+      "type": "header",
+      "content": "Layout & Styling"
+    },
+    {
       "type": "select",
       "id": "text_alignment",
       "label": "Text Alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        {"value": "left", "label": "Left"},
+        {"value": "center", "label": "Center"},
+        {"value": "right", "label": "Right"}
       ],
       "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_height",
+      "label": "Enable Full Viewport Height",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "label": "Background Overlay Opacity",
+      "default": 0.3,
+      "info": "0 for no overlay, 1 for fully opaque."
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_animation",
+      "label": "Enable Scroll Animation for Content",
+      "default": false
     }
   ],
   "presets": [
     {
-      "name": "Custom Hero Section"
+      "name": "Custom Hero"
     }
   ]
 }
