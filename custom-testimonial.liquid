@@ -1,0 +1,516 @@
+{% comment %}
+  Shopify Section: Testimonials Slider with SwiperJS
+
+  Usage:
+  1. Save this code as a new file in your Shopify theme's 'sections' folder (e.g., `custom-testimonials-slider.liquid`).
+  2. Ensure SwiperJS ('swiper-bundle.min.js') is uploaded to your theme's 'assets' folder.
+  3. Go to the Shopify Theme Editor (Online Store > Themes > Customize).
+  4. Click "Add section" and select "Testimonials Slider" (or the name you gave the file).
+  5. Configure the section settings (Title, Colors, Layout) and add testimonial blocks.
+{% endcomment %}
+
+{%- liquid
+  assign section_id = 'testimonials-' | append: section.id
+  assign slides_per_view_desktop = 3
+  assign slides_per_view_tablet = 2
+  assign slides_per_view_mobile = 1
+  assign space_between = 30
+
+  assign card_align_items = 'center'
+  if section.settings.card_text_alignment == 'left'
+    assign card_align_items = 'flex-start'
+  elsif section.settings.card_text_alignment == 'right'
+    assign card_align_items = 'flex-end'
+  endif
+
+  assign star_filled = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20px" height="20px"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434L10.788 3.21z" clip-rule="evenodd" /></svg>'
+  assign star_unfilled = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20px" height="20px"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.31h5.518a.563.563 0 0 1 .32.950l-4.498 3.27a.562.562 0 0 0-.192.584l1.7 5.309a.563.563 0 0 1-.812.622l-4.89-3.092a.563.563 0 0 0-.59 0l-4.89 3.092a.563.563 0 0 1-.812-.622l1.7-5.309a.563.563 0 0 0-.192-.584l-4.498-3.27a.563.563 0 0 1 .32-.95h5.518a.563.563 0 0 0 .475-.31l2.125-5.11Z" /></svg>'
+-%}
+
+{{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag }}
+
+<style>
+  /* Basic Section Styling */
+  #{{ section_id }} {
+    padding: 50px 0;
+    background-color: {{ section.settings.background_color }};
+    color: {{ section.settings.text_color }};
+  }
+
+  #{{ section_id }} .testimonials-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  #{{ section_id }} .section-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  #{{ section_id }} .section-header h2 {
+    font-size: {{ section.settings.main_heading_font_size }}px; /* Customizable font size */
+    font-weight: bold;
+    margin: 0;
+    color: {{ section.settings.heading_color }};
+  }
+
+  /* Swiper Styles */
+  #{{ section_id }} .swiper-container {
+    width: 100%;
+    padding-bottom: 50px; /* Space for absolutely positioned pagination */
+    overflow: hidden;
+    position: relative; /* Context for absolute pagination */
+  }
+
+  #{{ section_id }} .swiper-slide {
+    background-color: {{ section.settings.card_background_color }};
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: {{ card_align_items }};
+    text-align: {{ section.settings.card_text_alignment }};
+    height: auto;
+    box-sizing: border-box;
+    color: {{ section.settings.card_text_color }};
+    flex-shrink: 0;
+  }
+
+  /* Card Content Styles */
+  #{{ section_id }} .testimonial-content {
+     display: flex;
+     flex-direction: column;
+     align-items: inherit;
+     width: 100%;
+     justify-content: space-between;
+     height: 100%;
+  }
+
+
+  #{{ section_id }} .testimonial-image-wrapper {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: {{ section.settings.card_element_spacing }}px;
+    background-color: #eee;
+    flex-shrink: 0;
+    {% if section.settings.card_text_alignment != 'center' %}
+      align-self: center;
+    {% endif %}
+  }
+
+  #{{ section_id }} .testimonial-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  #{{ section_id }} .testimonial-rating {
+    margin-bottom: {{ section.settings.card_element_spacing }}px;
+    display: flex;
+    gap: 5px;
+    color: {{ section.settings.star_color }};
+    flex-shrink: 0;
+    justify-content: {{ card_align_items | replace: 'flex-', '' }};
+     width: 100%;
+  }
+
+   #{{ section_id }} .testimonial-rating svg {
+     flex-shrink: 0;
+   }
+
+  #{{ section_id }} .testimonial-text {
+    font-size: {{ section.settings.text_font_size }}px;
+    line-height: 1.6;
+    margin-bottom: {{ section.settings.card_element_spacing }}px;
+    flex-grow: 1;
+    width: 100%;
+  }
+
+  #{{ section_id }} .testimonial-name { /* Now styles h3 */
+    font-weight: bold; /* Default bold for h3, can be overridden by theme heading fonts */
+    font-size: {{ section.settings.name_font_size }}px; /* Customizable font size */
+    margin-top: auto;
+    color: {{ section.settings.card_heading_color }};
+    flex-shrink: 0;
+    width: 100%;
+    /* Resetting some h3 defaults if needed */
+    margin-bottom: 0;
+    line-height: 1.3; /* Adjust as needed */
+  }
+
+  /* Swiper Pagination - Dynamic Bullets Centered */
+  #{{ section_id }} .swiper-pagination {
+    position: absolute;
+    bottom: 10px !important;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+  }
+
+  #{{ section_id }} .swiper-pagination-bullet {
+     background-color: #000000;
+     opacity: 0.4;
+     width: 8px;
+     height: 8px;
+     /* Removed custom transition to let Swiper core handle it */
+  }
+
+   #{{ section_id }} .swiper-pagination-bullet-active {
+     background-color: #000000;
+     opacity: 1;
+   }
+
+
+  /* Responsive Adjustments */
+  @media (max-width: 991px) { /* Tablet */
+     #{{ section_id }} .section-header h2 {
+        font-size: {{ section.settings.main_heading_font_size | times: 0.85 | round }}px;
+     }
+  }
+  @media (max-width: 767px) { /* Mobile */
+     #{{ section_id }} {
+        padding: 30px 0;
+     }
+     #{{ section_id }} .section-header h2 {
+        font-size: {{ section.settings.main_heading_font_size | times: 0.75 | round }}px;
+     }
+     #{{ section_id }} .swiper-slide {
+        padding: 20px;
+     }
+     #{{ section_id }} .testimonial-image-wrapper {
+        width: 80px;
+        height: 80px;
+        margin-bottom: {{ section.settings.card_element_spacing | times: 0.8 | round }}px;
+     }
+      #{{ section_id }} .testimonial-rating {
+        margin-bottom: {{ section.settings.card_element_spacing | times: 0.8 | round }}px;
+      }
+     #{{ section_id }} .testimonial-text {
+        font-size: {{ section.settings.text_font_size | times: 0.9 | round }}px;
+        margin-bottom: {{ section.settings.card_element_spacing | times: 0.8 | round }}px;
+     }
+     #{{ section_id }} .testimonial-name { /* Now styles h3 */
+        font-size: {{ section.settings.name_font_size | times: 0.9 | round }}px;
+     }
+     #{{ section_id }} .swiper-pagination-bullet {
+        width: 6px;
+        height: 6px;
+     }
+      #{{ section_id }} .swiper-pagination {
+        bottom: 5px;
+      }
+  }
+
+</style>
+
+<div id="{{ section_id }}" class="testimonials-section">
+  <div class="testimonials-container">
+
+    {% if section.settings.title != blank %}
+      <div class="section-header">
+        <h2>{{ section.settings.title | escape }}</h2>
+      </div>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <div class="swiper-container testimonial-swiper-{{ section.id }}">
+        <div class="swiper-wrapper">
+          {% for block in section.blocks %}
+            <div class="swiper-slide" {{ block.shopify_attributes }}>
+              <div class="testimonial-content">
+                {% if block.settings.image != blank %}
+                  <div class="testimonial-image-wrapper">
+                    <img
+                      src="{{ block.settings.image | image_url: width: 200, height: 200, crop: 'center' }}"
+                      alt="{{ block.settings.image.alt | default: block.settings.name | escape }}"
+                      class="testimonial-image"
+                      width="100"
+                      height="100"
+                      loading="lazy">
+                  </div>
+                {% else %}
+                   <div class="testimonial-image-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 100%; height: 100%; padding: 20%; color: #ccc;">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>
+                   </div>
+                {% endif %}
+
+                {% if block.settings.rating > 0 %}
+                  <div class="testimonial-rating" role="img" aria-label="{{ 'accessibility.star_reviews_info' | t: rating_value: block.settings.rating, rating_max: 5 }}">
+                    {%- for i in (1..5) -%}
+                      {%- if i <= block.settings.rating -%}
+                        {{ star_filled }}
+                      {%- else -%}
+                        {{ star_unfilled }}
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </div>
+                {% endif %}
+
+                {% if block.settings.text != blank %}
+                  <div class="testimonial-text">{{ block.settings.text }}</div>
+                {% endif %}
+
+                {% if block.settings.name != blank %}
+                  <h3 class="testimonial-name">{{ block.settings.name | escape }}</h3>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="swiper-pagination swiper-pagination-{{ section.id }}"></div>
+
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 40px;">
+         <p>{{ 'sections.testimonials.no_blocks' | t }}</p>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+
+{% comment %} Load Swiper JS {% endcomment %}
+<script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer="defer"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Only initialize if Swiper is loaded
+    if (typeof Swiper === 'undefined') {
+      console.error('Swiper JS not loaded for section {{ section.id }}');
+      const container = document.getElementById('{{ section_id }}');
+      if (container) container.classList.add('swiper-failed');
+      return;
+    }
+
+    const swiperContainer = document.querySelector('.testimonial-swiper-{{ section.id }}');
+
+    if (swiperContainer) {
+      const swiper = new Swiper(swiperContainer, {
+        // Core parameters for standard slider
+        slidesPerView: {{ slides_per_view_mobile }}, // Base slidesPerView (mobile first)
+        spaceBetween: {{ space_between }},
+        watchOverflow: true, // Disable Swiper if not enough slides to overflow
+        loop: false, // Set to true if you want infinite loop and have enough slides
+
+        // Responsive breakpoints
+        breakpoints: {
+          // when window width is >= 768px (Tablet)
+          768: {
+            slidesPerView: {{ slides_per_view_tablet }},
+            spaceBetween: {{ space_between }}
+          },
+          // when window width is >= 992px (Desktop)
+          992: {
+            slidesPerView: {{ slides_per_view_desktop }},
+            spaceBetween: {{ space_between }}
+          }
+        },
+
+        // Pagination
+        pagination: {
+          el: '.swiper-pagination-{{ section.id }}',
+          clickable: true,
+          dynamicBullets: true
+          // No dynamicMainBullets, as per bestsellers example and to allow Swiper's default handling
+        },
+
+        // Navigation buttons (optional, uncomment HTML as well if needed)
+        // navigation: {
+        //   nextEl: '.swiper-button-next-{{ section.id }}',
+        //   prevEl: '.swiper-button-prev-{{ section.id }}',
+        // },
+      });
+
+      // Shopify theme editor integration: Re-initialize Swiper on section/block events
+      if (Shopify.designMode) {
+        const handleShopifyEvent = () => {
+          if (swiper && swiper.update) {
+             setTimeout(() => {
+                if (swiper && swiper.destroyed === false) {
+                    swiper.update();
+                }
+             }, 50);
+          }
+        };
+        document.addEventListener('shopify:section:load', handleShopifyEvent);
+        document.addEventListener('shopify:section:select', handleShopifyEvent);
+        document.addEventListener('shopify:block:select', handleShopifyEvent);
+        document.addEventListener('shopify:block:deselect', handleShopifyEvent);
+        document.addEventListener('shopify:section:reorder', handleShopifyEvent);
+        document.addEventListener('shopify:section:update', handleShopifyEvent);
+      }
+
+    } else {
+       console.log('Swiper container not found for section {{ section.id }}');
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Testimonials Slider",
+  "tag": "section",
+  "class": "testimonial-slider-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "What our Customers tell"
+    },
+    {
+      "type": "range",
+      "id": "main_heading_font_size",
+      "min": 20,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Main Heading Font Size",
+      "default": 40
+    },
+    {
+        "type": "header",
+        "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Section Background",
+      "default": "#F8F5F0"
+    },
+     {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "General Text Color",
+      "default": "#555555"
+    },
+     {
+      "type": "color",
+      "id": "card_background_color",
+      "label": "Card Background",
+      "default": "#E9DDCF"
+    },
+     {
+      "type": "color",
+      "id": "card_heading_color",
+      "label": "Card Name Color",
+      "default": "#333333"
+    },
+     {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Card Text Color",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star Color",
+      "default": "#DAA520"
+    },
+    {
+      "type": "header",
+      "content": "Card Layout"
+    },
+    {
+      "type": "select",
+      "id": "card_text_alignment",
+      "label": "Content Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "text_font_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Text Font Size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "name_font_size",
+      "min": 14,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "label": "Name Font Size",
+      "default": 18
+    },
+     {
+      "type": "range",
+      "id": "card_element_spacing",
+      "min": 5,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Spacing Between Card Elements",
+      "default": 15
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "unit": "★",
+          "label": "Rating",
+          "default": 5
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Use this section to share customer feedback or reviews. Add an image, rating, text, and name for each testimonial.</p>"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "Customer Name"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials Slider",
+      "blocks": [
+        { "type": "testimonial" },
+        { "type": "testimonial" },
+        { "type": "testimonial" },
+        { "type": "testimonial" }
+      ]
+    }
+  ]
+}
+{% endschema %}

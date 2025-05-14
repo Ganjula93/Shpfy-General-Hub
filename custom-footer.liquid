@@ -1,0 +1,728 @@
+{% comment %}
+  ----------------------------------------------------------------------------------------------------------------------
+  Shopify Custom Footer Section
+  ----------------------------------------------------------------------------------------------------------------------
+  This section creates a layered footer:
+  1. A distinct top beige background area.
+  2. An email subscription box (with side-by-side content on desktop) overlapping the beige and terracotta areas.
+  3. The main terracotta footer content area below, with columns in a single row on desktop.
+  Social media icons are now added as direct SVG code via theme customizer settings.
+----------------------------------------------------------------------------------------------------------------------
+{% endcomment %}
+
+{% comment %} --------- START: CSS Styles for the Footer --------- {% endcomment %}
+<style>
+  .visually-hidden {
+    position: absolute !important;
+    overflow: hidden !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    clip: rect(1px, 1px, 1px, 1px) !important;
+    white-space: nowrap !important;
+  }
+
+  .custom-footer-outer-wrapper {
+    position: relative; /* Establishes a positioning context */
+    font-family: {{ section.settings.font_family | default: 'Helvetica, Arial, sans-serif' }}; /* Base sans-serif font */
+    background-color: {{ section.settings.footer_main_bg_color | default: '#BB6132' }};
+    z-index: {{ section.settings.footer_wrapper_z_index | default: 0 }}; /* Controls stacking of entire footer */
+  }
+
+  .footer-top-beige-area {
+    height: {{ section.settings.top_beige_area_height | default: '180px' }};
+    background-color: {{ section.settings.top_beige_area_bg_color | default: '#F8F5F0' }};
+    position: relative;
+    z-index: 1; /* Relative to .custom-footer-outer-wrapper */
+  }
+
+  /* Email Subscription Section Styles - Positioned absolutely to overlap */
+  .email-subscribe-section {
+    position: absolute;
+    width: {{ section.settings.subscribe_box_width | default: '70%' }};
+    left: 50%;
+    transform: translateX(-50%);
+    top: {{ section.settings.subscribe_box_offset_from_beige_top | default: '90px' }}px;
+    z-index: 3; /* Above beige and terracotta, within footer wrapper context */
+    background-color: {{ section.settings.subscribe_box_bg_color | default: '#E0BE93' }};
+    padding: 40px 45px;
+    text-align: left;
+    border-radius: {{ section.settings.subscribe_box_border_radius | default: '12px' }};
+    box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+  }
+
+  .email-subscribe-section .container-flex {
+    display: flex;
+    align-items: center; /* Key for vertical alignment of flex children */
+    justify-content: space-between;
+    gap: 35px;
+    max-width: 100%;
+  }
+
+  .subscribe-text-content {
+    flex: 1 1 50%;
+    text-align: left;
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100px; 
+  }
+
+  .subscribe-form-content {
+    flex: 1 1 45%;
+    max-width: 420px;
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100px; 
+  }
+
+  .email-subscribe-section h2 {
+    font-family: {{ section.settings.subscribe_heading_font | default: 'Georgia, serif' }};
+    font-size: {{ section.settings.subscribe_heading_font_size_desktop | default: '2.6em' }};
+    color: {{ section.settings.subscribe_heading_color | default: '#4A4A4A' }};
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-weight: {{ section.settings.subscribe_heading_font_weight | default: '700' }};
+    line-height: 1.25;
+  }
+
+  .email-subscribe-section p.subscribe-subheading {
+    font-size: clamp(0.85em, 1.6vw, 1em);
+    color: {{ section.settings.subscribe_text_color | default: '#6C6C6C' }};
+    margin-top: 0;
+    margin-bottom: 0;
+    line-height: 1.5;
+  }
+
+  .email-input-label {
+    display: block;
+    font-size: 0.85em;
+    color: {{ section.settings.subscribe_text_color | default: '#6C6C6C' }};
+    margin-bottom: 8px;
+    text-align: left;
+  }
+
+  .newsletter-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    margin: 0;
+  }
+
+  .newsletter-form__field-wrapper {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    background-color: {{ section.settings.subscribe_input_bg_color | default: '#ffffff' }};
+    border: 1px solid {{ section.settings.subscribe_input_border_color | default: '#D1D1D1' }};
+    border-radius: {{ section.settings.subscribe_input_border_radius | default: '4px' }};
+    padding: 0px 6px 0px 0px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    position: relative;
+  }
+
+  .newsletter-form__mail-icon {
+    padding: 0 10px 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: {{ section.settings.subscribe_input_placeholder_color | default: '#999999' }};
+  }
+  .newsletter-form__mail-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+
+  .newsletter-form__input {
+    flex-grow: 1;
+    padding: 12px 8px;
+    border: none;
+    font-size: 0.9em;
+    outline: none;
+    background-color: transparent;
+    color: {{ section.settings.subscribe_input_text_color | default: '#333333' }};
+  }
+  .newsletter-form__input::placeholder { color: {{ section.settings.subscribe_input_placeholder_color | default: '#999999' }}; opacity: 1; }
+  .newsletter-form__button { background-color: transparent; border: none; padding: 10px 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: {{ section.settings.subscribe_button_arrow_color | default: '#5A5A5A' }}; }
+  .newsletter-form__button svg { width: 22px; height: 22px; fill: currentColor; }
+  .newsletter-form__message { margin-top: 10px; font-size: 0.85em; width:100%; text-align:left; }
+  .form__message--success { color: #28a745; }
+  .form__message--error { color: #dc3545; }
+
+  /* Main Footer Section Styles - Terracotta part */
+  .main-footer-section {
+    background-color: {{ section.settings.footer_main_bg_color | default: '#BB6132' }};
+    color: {{ section.settings.footer_text_color | default: '#f5e9d9' }};
+
+    {% assign subscribe_box_bottom_edge_from_wrapper_top = section.settings.subscribe_box_offset_from_beige_top | plus: section.settings.subscribe_box_total_height_estimate %}
+    {% assign overlap_past_beige_area = subscribe_box_bottom_edge_from_wrapper_top | minus: section.settings.top_beige_area_height %}
+    {% assign desired_spacing_below_subscribe_overlap = 100 %}
+
+    {% if overlap_past_beige_area > 0 %}
+      padding-top: {{ overlap_past_beige_area | plus: desired_spacing_below_subscribe_overlap }}px;
+    {% else %}
+      padding-top: {{ desired_spacing_below_subscribe_overlap }}px;
+    {% endif %}
+
+    padding-bottom: {{ section.settings.main_footer_bottom_padding | default: '100px' }};
+    padding-left: {{ section.settings.footer_horizontal_padding | default: '10px' }};
+    padding-right: {{ section.settings.footer_horizontal_padding | default: '10px' }};
+    position: relative;
+    z-index: 2; 
+  }
+
+  .footer-grid-container {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: {{ section.settings.footer_column_gap | default: '30px' }};
+    max-width: {{ section.settings.footer_max_width | default: '100%' }};
+    margin: 0 auto;
+  }
+
+  .footer-column {
+    flex: 1;
+    min-width: 200px; 
+  }
+
+  .footer-column .logo-image { max-width: {{ section.settings.logo_max_width | default: '160px' }}; height: auto; margin-bottom: 20px; }
+  .footer-column .logo-text-heading { font-family: {{ section.settings.logo_text_font | default: 'Times New Roman, serif' }}; font-size: clamp(2em, 4vw, 2.8em); margin-bottom: 2px; font-weight: {{ section.settings.logo_text_font_weight | default: 'bold' }}; color: {{ section.settings.footer_heading_color | default: '#f5e9d9' }}; text-transform: uppercase; letter-spacing: 0.05em; }
+  .footer-column .logo-subtext { font-size: clamp(0.65em, 1.5vw, 0.75em); margin-top: 0; letter-spacing: 0.12em; color: {{ section.settings.footer_text_color | default: '#f5e9d9' }}; margin-bottom: 25px; text-transform: uppercase; font-weight: {{ section.settings.logo_subtext_font_weight | default: 'normal' }}; }
+
+  .footer-column-title { 
+    font-family: {{ section.settings.footer_subheading_font | default: 'Helvetica, Arial, sans-serif' }};
+    font-size: clamp(1.05em, 2.2vw, 1.2em); margin-bottom: 18px; color: {{ section.settings.footer_heading_color | default: '#f5e9d9' }}; font-weight: {{ section.settings.footer_subheading_font_weight | default: '600' }}; text-transform: none;
+  }
+   .social-icons-heading { 
+    font-family: {{ section.settings.social_icons_heading_font | default: section.settings.font_family | default: 'Helvetica, Arial, sans-serif' }};
+    font-size: {{ section.settings.social_icons_heading_size | default: '1.1em' }};
+    color: {{ section.settings.footer_heading_color | default: '#f5e9d9' }};
+    font-weight: {{ section.settings.social_icons_heading_font_weight | default: '600' }};
+    margin-bottom: 10px;
+    text-align: left;
+  }
+  .footer-column p { font-size: clamp(0.8em, 1.7vw, 0.9em); line-height: 1.65; color: {{ section.settings.footer_paragraph_color | default: '#e0c9ba' }}; margin-bottom: 12px; }
+  .footer-column ul { list-style: none; padding: 0; margin: 0; }
+  .footer-column ul li { margin-bottom: 12px; }
+  .footer-column ul li a { text-decoration: none; color: {{ section.settings.footer_link_color | default: '#e0c9ba' }}; font-size: clamp(0.8em, 1.7vw, 0.9em); transition: color 0.2s ease, padding-left 0.2s ease; }
+  .footer-column ul li a:hover { color: {{ section.settings.footer_link_hover_color | default: '#ffffff' }}; text-decoration: none; padding-left: 5px; }
+  .footer-column a.contact-email-link { color: {{ section.settings.footer_link_color | default: '#e0c9ba' }}; text-decoration: none; transition: color 0.2s ease; }
+  .footer-column a.contact-email-link:hover { color: {{ section.settings.footer_link_hover_color | default: '#ffffff' }}; text-decoration: underline; }
+
+  .social-icons { margin-top: 15px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .social-icons a { display: inline-flex; align-items: center; justify-content: center; }
+  .social-icons a .schema-svg-icon svg {
+    width: {{ section.settings.social_icon_size | default: '18px' }};
+    height: {{ section.settings.social_icon_size | default: '18px' }};
+    fill: {{ section.settings.social_icon_color | default: '#e0c9ba' }};
+    transition: fill 0.2s ease, transform 0.2s ease;
+  }
+  .social-icons a:hover .schema-svg-icon svg {
+    fill: {{ section.settings.social_icon_hover_color | default: '#ffffff' }};
+    transform: scale(1.15);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 992px) { /* Tablet */
+    .email-subscribe-section {
+      width: {{ section.settings.subscribe_box_width_tablet | default: '85%' }}; 
+      padding: 25px 30px;
+      top: {{ section.settings.subscribe_box_offset_from_beige_top_tablet | default: section.settings.subscribe_box_offset_from_beige_top | default: '70' }}px;
+    }
+     .email-subscribe-section .container-flex {
+      flex-direction: column;
+      align-items: center; 
+      text-align: center; 
+      gap: 20px;
+    }
+    .email-subscribe-section h2 {
+        font-size: {{ section.settings.subscribe_heading_font_size_tablet | default: '2.0em' }};
+    }
+    .subscribe-text-content { text-align: center; flex-basis: auto; min-height: auto; } 
+    .subscribe-form-content { text-align: center; flex-basis: auto; width: 100%; max-width: 400px; min-height: auto; align-items: center;} 
+    .newsletter-form { justify-content: center; align-items: center; }
+    .email-input-label { text-align: center; font-size: 0.8em; } 
+    .newsletter-form__input { font-size: 0.85em; }
+
+    .footer-grid-container {
+      flex-direction: column; 
+      flex-wrap: wrap; 
+      max-width: 90%;
+      gap: {{ section.settings.footer_column_gap_mobile | default: '25px' }};
+    }
+     .footer-column { text-align: center; } 
+     .footer-column .logo-image { display: block; margin-left: auto; margin-right: auto; } 
+     .social-icons { justify-content: center; }
+     .footer-column-title { font-size: 1.1em; }
+     .social-icons-heading { text-align: center; font-size: 1em; }
+     .footer-column p, .footer-column ul li a { font-size: 0.85em; }
+     .footer-column ul { padding-left: 0; } 
+  }
+
+  @media (max-width: 768px) { /* Mobile */
+    .footer-top-beige-area {
+         height: {{ section.settings.top_beige_area_height_mobile | default: '60px' }};
+    }
+    .email-subscribe-section {
+      position: relative;
+      /* margin-left: auto; /* Removed for transform centering */
+      /* margin-right: auto; /* Removed for transform centering */
+      left: 50%; /* Added for centering with transform */
+      transform: translateX(-50%); /* Added for centering */
+      top: -30px; 
+      margin-bottom: -15px; 
+      padding: 25px 15px; 
+      z-index: 5;
+    }
+     .email-subscribe-section .container-flex { 
+       gap: 15px; 
+       padding-left: 32px;
+       padding-right: 32px;
+       text-align: center; 
+     } 
+     .subscribe-text-content, .subscribe-form-content { text-align: center; align-items: center; } 
+
+     .email-subscribe-section h2 {
+        font-size: {{ section.settings.subscribe_heading_font_size_mobile | default: '1.6em' }};
+     }
+     .email-subscribe-section p.subscribe-subheading { font-size: 0.8em; }
+     .email-input-label { text-align: center; margin-bottom:8px; font-size: 0.75em; }
+     .newsletter-form__field-wrapper { padding: 4px 4px 4px 0px; }
+     .newsletter-form__input { font-size: 0.8em; }
+
+
+    .main-footer-section {
+      padding-top: 40px; 
+      padding-bottom: {{ section.settings.main_footer_bottom_padding_mobile | default: '70px' }}; 
+      z-index: 2;
+    }
+    .footer-grid-container {
+      max-width: 90%; 
+      gap: {{ section.settings.footer_column_gap_mobile | default: '20px' }};
+    }
+    .footer-column { margin-bottom: 15px; padding: 0; min-width: 0; text-align: center; } 
+    .footer-column .logo-text-heading { font-size: 1.8em; }
+    .footer-column .logo-subtext { font-size: 0.6em; }
+    .footer-column-title { font-size: 1em; margin-bottom: 12px; }
+    .social-icons-heading { text-align: center; font-size: 1em; margin-bottom: 8px; }
+    .footer-column p, .footer-column ul li a { font-size: 0.8em; line-height: 1.5; }
+    .social-icons { justify-content: center; }
+  }
+
+   @media (max-width: 480px) { /* Smaller Mobile */
+    .footer-top-beige-area {
+         height: {{ section.settings.top_beige_area_height_mobile | default: '50px' }};
+    }
+    .email-subscribe-section {
+      width: 85%; 
+      padding: 20px 10px;
+      top: -25px;
+      margin-bottom: -10px;
+      /* Centering for relative position with transform should still apply from 768px breakpoint */
+    }
+    .email-subscribe-section h2 {
+        font-size: {{ section.settings.subscribe_heading_font_size_mobile | default: '1.4em' }};
+    }
+    .email-subscribe-section p.subscribe-subheading { font-size: 0.75em; }
+    .email-input-label { font-size: 0.7em; }
+    .newsletter-form__field-wrapper { padding: 3px 3px 3px 0px; }
+    .newsletter-form__input { font-size: 0.75em; }
+    .newsletter-form__button svg { width: 18px; height: 18px; }
+
+
+    .main-footer-section {
+        padding-top: 30px;
+        padding-bottom: {{ section.settings.main_footer_bottom_padding_mobile | default: '60px' }}px;
+    }
+    .footer-grid-container { max-width: 95%; gap: 15px; }
+    .footer-column .logo-text-heading { font-size: 1.6em; }
+    .footer-column-title { font-size: 0.9em; }
+    .social-icons-heading { font-size: 0.9em; }
+    .footer-column p, .footer-column ul li a { font-size: 0.75em; }
+  }
+</style>
+{% comment %} --------- END: CSS Styles for the Footer --------- {% endcomment %}
+
+<div class="custom-footer-outer-wrapper">
+
+  <div class="footer-top-beige-area">
+    {% comment %} This div is intentionally empty. It just provides the beige background strip. {% endcomment %}
+  </div>
+
+  <div class="email-subscribe-section">
+    <div class="container-flex">
+      <div class="subscribe-text-content">
+        {% if section.settings.subscribe_heading != blank %}
+          <h2>{{ section.settings.subscribe_heading }}</h2>
+        {% endif %}
+        {% if section.settings.subscribe_subheading != blank %}
+          <p class="subscribe-subheading">{{ section.settings.subscribe_subheading }}</p>
+        {% endif %}
+      </div>
+      <div class="subscribe-form-content">
+        {% if section.settings.email_input_label_text != blank %}
+          <label for="NewsletterForm--{{ section.id }}" class="email-input-label">{{ section.settings.email_input_label_text }}</label>
+        {% endif %}
+        {% form 'customer', class: 'newsletter-form' %}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <div class="newsletter-form__field-wrapper">
+            <span class="newsletter-form__mail-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </span>
+            <label for="NewsletterForm--{{ section.id }}" class="visually-hidden">{{ 'newsletter.label' | t: default: 'Email address' }}</label>
+            <input id="NewsletterForm--{{ section.id }}" type="email" name="contact[email]" class="newsletter-form__input" value="{{ form.email }}" aria-required="true" autocorrect="off" autocapitalize="off" autocomplete="email" {% if form.errors %} autofocus aria-invalid="true" aria-describedby="Newsletter-error--{{ section.id }}" {% elsif form.posted_successfully? %} aria-describedby="Newsletter-success--{{ section.id }}" {% endif %} placeholder="{{ section.settings.subscribe_placeholder_text | default: 'Your E-Mail Address' }}" required >
+            <button type="submit" class="newsletter-form__button" name="commit" aria-label="{{ 'newsletter.button_label' | t: default: 'Subscribe' }}">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M16.172 11l-5.586-5.586 1.414-1.414L20 12l-7.999 8-1.414-1.414L16.172 13H4v-2h12.172z"/></svg>
+            </button>
+          </div>
+          {%- if form.errors -%}<small class="newsletter-form__message form__message--error" id="Newsletter-error--{{ section.id }}">{{ form.errors | default_errors }}</small>{%- endif -%}
+          {%- if form.posted_successfully? -%}<h3 class="newsletter-form__message form__message--success" id="Newsletter-success--{{ section.id }}" tabindex="-1" autofocus>{{ 'newsletter.success' | t }}</h3>{%- endif -%}
+        {% endform %}
+      </div>
+    </div>
+  </div>
+
+  <footer class="main-footer-section">
+    <div class="footer-grid-container">
+      {% comment %} Column 1: Logo, Text, Socials {% endcomment %}
+      <div class="footer-column">
+        {% if section.settings.logo != blank %}
+          <a href="{{ routes.root_url }}" aria-label="{{ shop.name }} Home" style="display: block; text-align: left;"><img src="{{ section.settings.logo | image_url: width: section.settings.logo_max_width }}" alt="{{ section.settings.logo.alt | default: shop.name | escape }}" loading="lazy" class="logo-image" width="{{ section.settings.logo_max_width }}" height="{{ section.settings.logo_max_width | divided_by: section.settings.logo.aspect_ratio | round }}" style="max-width: {{ section.settings.logo_max_width }}px;"></a>
+        {% elsif section.settings.logo_text_heading != blank %}
+          <h3 class="logo-text-heading">{{ section.settings.logo_text_heading | escape }}</h3>
+          {% if section.settings.logo_text_subheading != blank %}<p class="logo-subtext">{{ section.settings.logo_text_subheading | escape }}</p>{% endif %}
+        {% else %}
+           <a href="{{ routes.root_url }}" aria-label="{{ shop.name }} Home" style="text-decoration:none;"><h3 class="logo-text-heading">{{ shop.name | escape }}</h3></a>
+        {% endif %}
+        {% if section.settings.footer_description != blank %}<div class="footer-description-richtext">{{ section.settings.footer_description }}</div>{% endif %}
+
+        {% if section.settings.social_icons_heading != blank %}
+          <h4 class="social-icons-heading">{{ section.settings.social_icons_heading }}</h4>
+        {% endif %}
+        <div class="social-icons">
+          {% if section.settings.social_icon_1_svg != blank and section.settings.social_icon_1_link != blank %}
+            <a href="{{ section.settings.social_icon_1_link }}" aria-label="{{ section.settings.social_icon_1_aria_label | default: 'Social Media 1' }}" target="_blank" rel="noopener noreferrer">
+              <span class="schema-svg-icon">{{ section.settings.social_icon_1_svg }}</span>
+            </a>
+          {% endif %}
+          {% if section.settings.social_icon_2_svg != blank and section.settings.social_icon_2_link != blank %}
+            <a href="{{ section.settings.social_icon_2_link }}" aria-label="{{ section.settings.social_icon_2_aria_label | default: 'Social Media 2' }}" target="_blank" rel="noopener noreferrer">
+              <span class="schema-svg-icon">{{ section.settings.social_icon_2_svg }}</span>
+            </a>
+          {% endif %}
+          {% if section.settings.social_icon_3_svg != blank and section.settings.social_icon_3_link != blank %}
+            <a href="{{ section.settings.social_icon_3_link }}" aria-label="{{ section.settings.social_icon_3_aria_label | default: 'Social Media 3' }}" target="_blank" rel="noopener noreferrer">
+              <span class="schema-svg-icon">{{ section.settings.social_icon_3_svg }}</span>
+            </a>
+          {% endif %}
+          {% if section.settings.social_icon_4_svg != blank and section.settings.social_icon_4_link != blank %}
+            <a href="{{ section.settings.social_icon_4_link }}" aria-label="{{ section.settings.social_icon_4_aria_label | default: 'Social Media 4' }}" target="_blank" rel="noopener noreferrer">
+              <span class="schema-svg-icon">{{ section.settings.social_icon_4_svg }}</span>
+            </a>
+          {% endif %}
+          {% if section.settings.social_icon_5_svg != blank and section.settings.social_icon_5_link != blank %}
+            <a href="{{ section.settings.social_icon_5_link }}" aria-label="{{ section.settings.social_icon_5_aria_label | default: 'Social Media 5' }}" target="_blank" rel="noopener noreferrer">
+              <span class="schema-svg-icon">{{ section.settings.social_icon_5_svg }}</span>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      {% comment %} Column 2: Quick Links {% endcomment %}
+      {% if section.settings.quick_links_menu.links.size > 0 %}
+        <div class="footer-column"><h4 class="footer-column-title">{{ section.settings.quick_links_title | default: "Quick Links" }}</h4><ul>{% for link in section.settings.quick_links_menu.links %}<li><a href="{{ link.url }}">{{ link.title }}</a></li>{% endfor %}</ul></div>
+      {% endif %}
+      {% comment %} Column 3: Other Links {% endcomment %}
+      {% if section.settings.other_links_menu.links.size > 0 %}
+        <div class="footer-column"><h4 class="footer-column-title">{{ section.settings.other_links_title | default: "Other" }}</h4><ul>{% for link in section.settings.other_links_menu.links %}<li><a href="{{ link.url }}">{{ link.title }}</a></li>{% endfor %}</ul></div>
+      {% endif %}
+      {% comment %} Column 4: Contact Us {% endcomment %}
+      {% if section.settings.contact_us_title != blank or section.settings.contact_us_text != blank or section.settings.contact_email != blank %}
+      <div class="footer-column">
+        <h4 class="footer-column-title">{{ section.settings.contact_us_title | default: "Contact Us" }}</h4>
+        {% if section.settings.contact_us_text != blank %}<div class="footer-contact-richtext">{{ section.settings.contact_us_text }}</div>{% endif %}
+        {% if section.settings.contact_email != blank %}<p><a href="mailto:{{ section.settings.contact_email }}" class="contact-email-link">{{ section.settings.contact_email }}</a></p>{% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </footer>
+</div>
+
+{% schema %}
+{
+  "name": "Custom Footer (Layered)",
+  "settings": [
+    {
+      "type": "header",
+      "content": "General Settings"
+    },
+    {
+      "type": "font_picker",
+      "id": "font_family",
+      "label": "Base Font Family (Sans-Serif Recommended)",
+      "default": "sans-serif",
+      "info": "Applied to general text. Headings have separate font pickers."
+    },
+    {
+      "type": "text",
+      "id": "footer_wrapper_z_index",
+      "label": "Footer Wrapper Z-Index",
+      "default": "0",
+      "info": "Adjust if footer conflicts with other fixed/sticky elements like a header. Lower values are further behind."
+    },
+    {
+      "type": "header",
+      "content": "Top Beige Area"
+    },
+    {
+      "type": "text",
+      "id": "top_beige_area_height",
+      "label": "Height (Desktop, e.g., 180px)",
+      "default": "180px"
+    },
+    {
+      "type": "text",
+      "id": "top_beige_area_height_mobile",
+      "label": "Height (Mobile, e.g., 60px)",
+      "default": "60px"
+    },
+    {
+      "type": "color",
+      "id": "top_beige_area_bg_color",
+      "label": "Background Color",
+      "default": "#F8F5F0"
+    },
+    {
+      "type": "header",
+      "content": "Email Subscription Box (Overlapping)"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_box_width",
+      "label": "Width (Desktop, e.g., 70%)",
+      "default": "70%"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_box_width_tablet",
+      "label": "Width (Tablet, e.g., 85%)",
+      "default": "85%"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_box_offset_from_beige_top",
+      "label": "Vertical Offset from Top of Beige Area (px)",
+      "default": "90",
+      "info": "E.g., if beige area is 180px high, an offset of '90' starts the subscribe box halfway down the beige area."
+    },
+     {
+      "type": "text",
+      "id": "subscribe_box_offset_from_beige_top_tablet",
+      "label": "Vertical Offset (Tablet, px)",
+      "default": "70",
+      "info": "Similar to desktop, but for tablet view."
+    },
+    {
+      "type": "text",
+      "id": "subscribe_box_total_height_estimate",
+      "label": "Est. Subscribe Box Total Height (px)",
+      "default": "200px",
+      "info": "Approx. height of subscribe box (content + padding). For main footer padding calculation. Adjust if content changes."
+    },
+    {
+      "type": "text",
+      "id": "subscribe_box_border_radius",
+      "label": "Border Radius (e.g., 12px)",
+      "default": "12px"
+    },
+    {
+      "type": "color",
+      "id": "subscribe_box_bg_color",
+      "label": "Background Color",
+      "default": "#E0BE93"
+    },
+    { "type": "text", "id": "subscribe_heading", "label": "Heading Text", "default": "Subscribe and get 5 EUR OFF!" },
+    { "type": "font_picker", "id": "subscribe_heading_font", "label": "Heading Font", "default": "serif" },
+    {
+      "type": "text",
+      "id": "subscribe_heading_font_size_desktop",
+      "label": "Heading Font Size (Desktop, e.g., 2.6em)",
+      "default": "2.6em"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_heading_font_size_tablet",
+      "label": "Heading Font Size (Tablet, e.g., 2.0em)",
+      "default": "2.0em"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_heading_font_size_mobile",
+      "label": "Heading Font Size (Mobile, e.g., 1.6em)",
+      "default": "1.6em"
+    },
+    { "type": "select", "id": "subscribe_heading_font_weight", "label": "Heading Font Weight", "options": [{"value": "300","label": "Light"},{"value": "normal","label": "Normal (400)"},{"value": "500","label": "Medium"},{"value": "600","label": "Semi-Bold"},{"value": "bold","label": "Bold (700)"},{"value": "800","label": "Extra-Bold"}], "default": "bold" },
+    { "type": "color", "id": "subscribe_heading_color", "label": "Heading Text Color", "default": "#4A4A4A" },
+    { "type": "text", "id": "subscribe_subheading", "label": "Subheading Text (Left of Form)", "default": "Get notified about new Drops, Discounts and more" },
+    { "type": "color", "id": "subscribe_text_color", "label": "Subheading/Label Text Color", "default": "#6C6C6C" },
+    {
+      "type": "text",
+      "id": "email_input_label_text",
+      "label": "Email Input Label Text",
+      "default": "Get notified about new Drops, Discounts and more",
+      "info": "This label appears above the email input field."
+    },
+    { "type": "text", "id": "subscribe_placeholder_text", "label": "Input Placeholder Text", "default": "Your E-Mail Adress" },
+    { "type": "color", "id": "subscribe_input_bg_color", "label": "Input Field Background", "default": "#FFFFFF" },
+    { "type": "color", "id": "subscribe_input_border_color", "label": "Input Field Border", "default": "#D1D1D1" },
+    { "type": "text", "id": "subscribe_input_border_radius", "label": "Input Field Border Radius", "default": "4px" },
+    { "type": "color", "id": "subscribe_input_text_color", "label": "Input Text Color", "default": "#333333" },
+    { "type": "color", "id": "subscribe_input_placeholder_color", "label": "Input Placeholder Color", "default": "#999999" },
+    { "type": "color", "id": "subscribe_button_arrow_color", "label": "Arrow Icon Color", "default": "#5A5A5A" },
+    {
+      "type": "header",
+      "content": "Main Footer Area (Terracotta)"
+    },
+    {
+      "type": "color",
+      "id": "footer_main_bg_color",
+      "label": "Background Color",
+      "default": "#BB6132"
+    },
+    {
+      "type": "text",
+      "id": "footer_horizontal_padding",
+      "label": "Horizontal Padding (Desktop, e.g., 10px)",
+      "default": "10px",
+      "info": "Padding on the left/right of the main terracotta footer content."
+    },
+    {
+      "type": "text",
+      "id": "footer_column_gap",
+      "label": "Gap Between Columns (e.g., 30px)",
+      "default": "30px"
+    },
+    {
+      "type": "text",
+      "id": "footer_column_gap_mobile",
+      "label": "Gap Between Columns (Mobile, e.g., 20px)",
+      "default": "20px"
+    },
+    {
+      "type": "text",
+      "id": "main_footer_bottom_padding",
+      "label": "Bottom Padding (Desktop, e.g., 100px)",
+      "default": "100px"
+    },
+    {
+      "type": "text",
+      "id": "main_footer_bottom_padding_mobile",
+      "label": "Bottom Padding (Mobile, e.g., 70px)",
+      "default": "70px"
+    },
+    {
+      "type": "text",
+      "id": "footer_max_width",
+      "label": "Content Max Width (e.g., 100% or 1400px)",
+      "default": "100%",
+      "info": "Use '100%' to fill available space (respecting padding), or a fixed value like '1400px'."
+    },
+    { "type": "color", "id": "footer_heading_color", "label": "Headings Color (Logo, Titles)", "default": "#f5e9d9" },
+    { "type": "color", "id": "footer_text_color", "label": "General Text Color (Logo Subtext)", "default": "#f5e9d9" },
+    { "type": "color", "id": "footer_paragraph_color", "label": "Paragraph Text Color", "default": "#e0c9ba" },
+    { "type": "color", "id": "footer_link_color", "label": "Link Color", "default": "#e0c9ba" },
+    { "type": "color", "id": "footer_link_hover_color", "label": "Link Hover Color", "default": "#ffffff" },
+    { "type": "header", "content": "Main Footer - Column 1: Logo & Description" },
+    { "type": "image_picker", "id": "logo", "label": "Logo Image" },
+    { "type": "text", "id": "logo_max_width", "label": "Logo Max Width (px)", "default": "160" },
+    { "type": "text", "id": "logo_text_heading", "label": "Logo Text Heading", "default": "YAMVIC" },
+    { "type": "font_picker", "id": "logo_text_font", "label": "Logo Text Font", "default": "serif" },
+    { "type": "select", "id": "logo_text_font_weight", "label": "Logo Text Font Weight", "options": [{"value": "300","label": "Light"},{"value": "normal","label": "Normal (400)"},{"value": "500","label": "Medium"},{"value": "600","label": "Semi-Bold"},{"value": "bold","label": "Bold (700)"},{"value": "800","label": "Extra-Bold"}], "default": "bold" },
+    { "type": "text", "id": "logo_text_subheading", "label": "Logo Subtext", "default": "BOHEMIAN BAGS & ACCESSORIES" },
+    { "type": "select", "id": "logo_subtext_font_weight", "label": "Logo Subtext Font Weight", "options": [{"value": "300","label": "Light"},{"value": "normal","label": "Normal (400)"},{"value": "500","label": "Medium"}], "default": "normal" },
+    { "type": "richtext", "id": "footer_description", "label": "Description Text", "default": "<p>Bibendum sed venenatis nulla neque gravida arcu quam risus. Gravida facilisis sed est tortor elit fermentum tempor turpis.</p>" },
+    {
+      "type": "header",
+      "content": "Main Footer - Social Media Icons"
+    },
+    {
+      "type": "text",
+      "id": "social_icons_heading",
+      "label": "Social Icons Heading Text",
+      "default": "Find us on Social Media"
+    },
+    {
+      "type": "font_picker",
+      "id": "social_icons_heading_font",
+      "label": "Social Heading Font",
+      "default": "sans-serif",
+      "info": "Font for the 'Find us on Social Media' heading."
+    },
+    {
+      "type": "text",
+      "id": "social_icons_heading_size",
+      "label": "Social Heading Font Size (e.g., 1.1em)",
+      "default": "1.1em"
+    },
+    {
+      "type": "select",
+      "id": "social_icons_heading_font_weight",
+      "label": "Social Heading Font Weight",
+      "options": [{"value": "normal","label": "Normal"},{"value": "600","label": "Semi-Bold"},{"value": "bold","label": "Bold"}],
+      "default": "600"
+    },
+    {
+      "type": "text",
+      "id": "social_icon_size",
+      "label": "Icon Size (e.g., 18px)",
+      "default": "18px",
+      "info": "Applied to SVGs pasted below."
+    },
+    {
+      "type": "color",
+      "id": "social_icon_color",
+      "label": "Icon Color",
+      "default": "#e0c9ba"
+    },
+    {
+      "type": "color",
+      "id": "social_icon_hover_color",
+      "label": "Icon Hover Color",
+      "default": "#ffffff"
+    },
+    { "type": "textarea", "id": "social_icon_1_svg", "label": "Social Icon 1: SVG Code" },
+    { "type": "url", "id": "social_icon_1_link", "label": "Social Icon 1: Link URL" },
+    { "type": "text", "id": "social_icon_1_aria_label", "label": "Social Icon 1: Aria Label" },
+    { "type": "textarea", "id": "social_icon_2_svg", "label": "Social Icon 2: SVG Code" },
+    { "type": "url", "id": "social_icon_2_link", "label": "Social Icon 2: Link URL" },
+    { "type": "text", "id": "social_icon_2_aria_label", "label": "Social Icon 2: Aria Label" },
+    { "type": "textarea", "id": "social_icon_3_svg", "label": "Social Icon 3: SVG Code" },
+    { "type": "url", "id": "social_icon_3_link", "label": "Social Icon 3: Link URL" },
+    { "type": "text", "id": "social_icon_3_aria_label", "label": "Social Icon 3: Aria Label" },
+    { "type": "textarea", "id": "social_icon_4_svg", "label": "Social Icon 4: SVG Code" },
+    { "type": "url", "id": "social_icon_4_link", "label": "Social Icon 4: Link URL" },
+    { "type": "text", "id": "social_icon_4_aria_label", "label": "Social Icon 4: Aria Label" },
+    { "type": "textarea", "id": "social_icon_5_svg", "label": "Social Icon 5: SVG Code" },
+    { "type": "url", "id": "social_icon_5_link", "label": "Social Icon 5: Link URL" },
+    { "type": "text", "id": "social_icon_5_aria_label", "label": "Social Icon 5: Aria Label" },
+    { "type": "header", "content": "Main Footer - Link Columns" },
+    { "type": "text", "id": "quick_links_title", "label": "Quick Links Title", "default": "Quick Links" },
+    { "type": "link_list", "id": "quick_links_menu", "label": "Quick Links Menu" },
+    { "type": "text", "id": "other_links_title", "label": "Other Links Title", "default": "Other" },
+    { "type": "link_list", "id": "other_links_menu", "label": "Other Links Menu" },
+    { "type": "font_picker", "id": "footer_subheading_font", "label": "Link Column Title Font", "default": "sans-serif" },
+    { "type": "select", "id": "footer_subheading_font_weight", "label": "Link Column Title Font Weight", "options": [{"value": "300","label": "Light"},{"value": "normal","label": "Normal (400)"},{"value": "500","label": "Medium"},{"value": "600","label": "Semi-Bold"},{"value": "bold","label": "Bold (700)"}], "default": "600" },
+    { "type": "header", "content": "Main Footer - Contact Us Column" },
+    { "type": "text", "id": "contact_us_title", "label": "Contact Us Title", "default": "Contact Us" },
+    { "type": "richtext", "id": "contact_us_text", "label": "Contact Us Text", "default": "<p>In maecenas faucibus ut enim aculs nec sapien nisi. Eu fringilla in malesuada gravida suscipit integer ornare. Nunc euismod cursus egestas.</p>" },
+    { "type": "text", "id": "contact_email", "label": "Contact Email", "default": "info@yamvic.com" }
+  ],
+  "presets": [
+    {
+      "name": "Custom Footer (Layered)"
+    }
+  ]
+}
+{% endschema %}
