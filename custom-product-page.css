@@ -1,0 +1,498 @@
+/*
+  Shopify Product Page CSS
+  Styles for the product page template.
+*/
+
+/* General Page & Utility */
+.button {
+  display: inline-block;
+  padding: 12px 24px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.button--primary {
+  background-color: #000;
+  color: #fff;
+}
+.button--primary:hover {
+  background-color: #333;
+}
+.button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.rte { line-height: 1.6; }
+.rte p { margin-bottom: 1em; }
+
+/* Utility class for constraining width, if needed inside full-width sections */
+.page-width {
+  max-width: 1200px; /* Standard page width, adjust as per your theme */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px; /* Standard page padding */
+  padding-right: 20px; /* Standard page padding */
+  box-sizing: border-box;
+}
+
+
+/* Product Hero Section - UPDATED FOR POLAROID EFFECT */
+.product-hero {
+  background-color: #f0f0f0; /* Fallback background for the whole hero area */
+  background-size: cover;
+  background-position: center center;
+  min-height: 400px; /* Adjust as needed */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px; /* Padding for the overall hero section */
+  position: relative;
+}
+
+.product-hero__image-wrapper {
+  background-color: #E0D6BA; /* White background for the Polaroid frame */
+  padding: 15px 15px 60px 15px; /* Polaroid-style padding: top, sides, larger bottom */
+  border-radius: 3px; /* Slight rounding for Polaroid edge */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1); /* Polaroid shadow */
+  max-width: 450px; /* Adjust max-width of the Polaroid itself */
+  width: 100%;
+  box-sizing: border-box;
+  transform: rotate(-5deg); /* Initial slight rotation */
+  transition: transform 0.3s ease; /* Smooth transition for hover and other transform changes */
+}
+
+/* UPDATED: Tilt even more on hover */
+.product-hero__image-wrapper:hover {
+  transform: rotate(-10deg); /* Increase rotation on hover */
+}
+
+
+.product-hero__image {
+  display: block;
+  max-width: 100%; /* Image takes full width of the inner padded area */
+  height: auto;
+  margin: 0 auto;
+  border: 1px solid #eee; /* Optional: very light border around the image itself */
+  /* box-shadow: none; /* Remove previous shadow if any, as wrapper has it now */
+  /* border-radius: 0; /* Remove previous radius if any */
+}
+
+/* Product Details Wrapper & Main 3-Column Grid Structure */
+.product-details-wrapper {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #F8F5F0; /* Section background color */
+}
+
+.product-info-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Mobile: single column */
+  gap: 20px; /* Default gap for stacked columns on mobile */
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Individual columns/areas within the main grid */
+.product-column { }
+.product-column--details { }
+.product-column--description-text { }
+.product-column--form-actions { }
+
+
+/* Product Info Elements Styling & Gap Reduction in Column 1 */
+.product-reviews {
+  margin-bottom: 8px;
+  font-size: 0.9em;
+  color: #555;
+  display: flex; /* For aligning stars and count */
+  align-items: center;
+  gap: 6px;
+}
+.product-reviews__stars svg {
+  color: #f0ad4e;
+  width: 16px; /* Ensure consistent star size */
+  height: 16px;
+}
+.product-reviews__placeholder { color: #f0ad4e; }
+
+.product-title {
+  font-size: 2.2em;
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.product-price {
+  margin-bottom: 10px;
+}
+.product-price__amount {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  margin-bottom: 4px;
+}
+.product-price__compare { font-size: 1em; color: #777; text-decoration: line-through; margin-left: 10px; }
+.product-price__taxes-included {
+  font-size: 0.8em;
+  color: #666;
+  margin-top: 0;
+}
+.product-description {
+  font-size: 1em;
+  color: #444;
+  line-height: 1.7;
+}
+
+/* Product Form Elements Styling */
+.product-form__input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  border: 1px solid #625F49;
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+  background-color: #F8F5F0;
+  box-sizing: border-box;
+}
+
+.quantity-selector__button {
+  background-color: #F8F5F0;
+  color: #625F49;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 1.2em;
+  line-height: 1;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+.quantity-selector__button:hover {
+  background-color: #e0ddd7;
+  color: #504d3c;
+}
+
+.quantity-selector__input.product-form__input--quantity {
+  max-width: none;
+  width: auto;
+  flex-grow: 1;
+  text-align: center;
+  border: none;
+  border-left: 1px solid #625F49;
+  border-right: 1px solid #625F49;
+  border-radius: 0;
+  padding: 10px 5px;
+  background-color: #F8F5F0;
+  color: #333;
+  -moz-appearance: textfield;
+  font-size: 1em;
+  font-weight: normal;
+  box-sizing: border-box;
+}
+.quantity-selector__input::-webkit-outer-spin-button,
+.quantity-selector__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
+.product-form__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: stretch;
+  margin-bottom: 15px;
+}
+.product-form__quantity label { display: none; }
+
+.product-form__add-to-cart.button--primary {
+  background-color: #625F49;
+  color: #fff;
+  font-family: sans-serif;
+  border-color: #625F49;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  font-size: 1.1em;
+  width: 100%;
+}
+.product-form__add-to-cart.button--primary:hover {
+  background-color: #504d3c;
+  border-color: #504d3c;
+}
+
+.shopify-payment-button-wrapper {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.shopify-payment-button__button {
+  margin-top: 0;
+  border-radius: 5px !important;
+  width: 100%;
+}
+.shopify-payment-button__button--unbranded { background-color: #ffc439 !important; color: #000 !important; border: none !important; }
+.shopify-payment-button__button--unbranded:hover { background-color: #f0b92e !important; }
+
+.shopify-payment-button__more-options,
+.shopify-payment-button-wrapper > a {
+  text-decoration: none !important;
+  color: #8D8D8D !important;
+  font-size: 0.9em;
+  font-family: var(--font-body-family, sans-serif);
+}
+.shopify-payment-button__more-options:hover,
+.shopify-payment-button-wrapper > a:hover {
+  color: #555 !important;
+  text-decoration: underline !important;
+}
+
+
+/* "You may also like" Section - SwiperJS STYLES */
+.related-products-section {
+  padding-top: 40px;
+  padding-bottom: 60px;
+  /* margin-top: 40px; /* REMOVED to prevent white gap */
+  background-color: #F8F5F0; /* Background color for the entire section */
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  box-sizing: border-box;
+}
+
+.related-products-section > .page-width {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.related-products__title {
+  font-size: 1.8em;
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: 600;
+  color: #333;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* Swiper Container */
+.related-products-swiper {
+  width: 100%;
+  height: auto;
+  position: relative;
+  overflow: visible;
+  padding-left: 20px;
+  padding-right: 20px;
+  box-sizing: border-box;
+}
+
+.swiper-slide.related-product-slide {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+}
+
+.related-product-card {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+  transition: box-shadow 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.related-product-card:hover {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.related-product-card__link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.related-product-card__image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  border-bottom: 1px solid #eee;
+}
+
+.related-product-card__info {
+  padding: 15px;
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.related-product-card__title {
+  font-size: 1em;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.related-product-card__price {
+  font-size: 0.9em;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Swiper Navigation Buttons Styling */
+.related-products-swiper .swiper-button-prev,
+.related-products-swiper .swiper-button-next {
+  color: #625F49;
+  width: 30px;
+  height: 30px;
+  margin-top: -25px;
+  top: 45%;
+}
+.related-products-swiper .swiper-button-prev::after,
+.related-products-swiper .swiper-button-next::after {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+.related-products-swiper .swiper-button-prev {
+  left: -5px;
+}
+.related-products-swiper .swiper-button-next {
+  right: -5px;
+}
+
+/* Swiper Pagination Styling - Dynamic Bullets */
+.related-products-swiper .swiper-pagination {
+  position: relative;
+  bottom: auto;
+  left: auto;
+  width: 100%;
+  text-align: center;
+  margin-top: 35px;
+  padding-bottom: 15px;
+}
+
+.related-products-swiper .swiper-pagination-bullet {
+  background-color: #625F49;
+  opacity: 0.4;
+  width: 8px;
+  height: 8px;
+  margin: 0 5px !important;
+  transition: transform 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
+}
+.related-products-swiper .swiper-pagination-bullet-active {
+  opacity: 1;
+  background-color: #504d3c;
+  transform: scale(1.3);
+}
+
+.related-products-swiper .swiper-pagination-bullet-active-main {
+  transform: scale(1.4);
+}
+.related-products-swiper .swiper-pagination-bullet-active-prev,
+.related-products-swiper .swiper-pagination-bullet-active-next {
+  transform: scale(1.2);
+  opacity: 0.7;
+}
+.related-products-swiper .swiper-pagination-bullet-active-prev-prev,
+.related-products-swiper .swiper-pagination-bullet-active-next-next {
+  transform: scale(1);
+  opacity: 0.5;
+}
+
+
+/* Responsive Adjustments for 3-Column Layout */
+@media (min-width: 768px) {
+  .product-info-grid {
+    grid-template-columns: 1fr 2fr 0.8fr;
+    gap: 30px;
+    align-items: start;
+  }
+
+  .product-form__controls { flex-direction: column; align-items: stretch; }
+}
+
+/* Mobile specific adjustments (screens up to 767px) */
+@media (max-width: 767px) {
+  .product-hero {
+    padding-top: 80px; /* UPDATED: Increased top padding for Polaroid distance from header */
+    padding-bottom: 40px; /* Kept bottom padding */
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  .product-hero__image-wrapper {
+    padding: 10px 10px 40px 10px;
+    max-width: 300px;
+    transform: rotate(-5deg);
+  }
+  .product-hero__image-wrapper:hover {
+    transform: rotate(-10deg);
+  }
+
+  .product-info-grid {
+    gap: 15px; /* UPDATED: Reduced overall gap for stacked columns */
+  }
+
+  /* Reduce gaps within the first column (details) on mobile */
+  .product-column--details .product-reviews { margin-bottom: 5px; }
+  .product-column--details .product-title { margin-bottom: 5px; font-size: 1.6em; }
+  .product-column--details .product-price { margin-bottom: 5px; }
+  .product-column--details .product-price__amount { font-size: 1.4em; margin-bottom: 2px; }
+  .product-column--details .product-price__taxes-included { margin-top: 0; }
+
+  /* Reduce gap between the first column (details) and the description on mobile */
+  .product-column--details {
+    margin-bottom: 10px; /* UPDATED: Space after the details block */
+  }
+  .product-column--description-text {
+    margin-bottom: 15px; /* Space after the description block */
+  }
+
+
+  .product-title { font-size: 1.8em; } /* This was a general mobile rule, might be overridden by above specific */
+  .product-price__amount { font-size: 1.5em; } /* This was a general mobile rule, might be overridden by above specific */
+  .related-products__title { font-size: 1.5em; }
+
+  .product-form__controls { flex-direction: column; align-items: stretch; }
+
+  .product-column {
+     margin-bottom: 0; /* UPDATED: Removed default bottom margin as gaps are handled by .product-info-grid or specific column margins now */
+  }
+  .product-column:last-child { margin-bottom: 0; }
+
+  .related-products-swiper {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .related-products-swiper .swiper-button-prev,
+  .related-products-swiper .swiper-button-next {
+    margin-top: -20px;
+    top: 40%;
+  }
+   .related-products-swiper .swiper-button-prev { left: -2px; }
+   .related-products-swiper .swiper-button-next { right: -2px; }
+
+  .related-products-swiper .swiper-pagination {
+    margin-top: 25px;
+  }
+}
