@@ -1,0 +1,737 @@
+{% comment %}
+  Shopify Cart Overview Section
+
+  This section recreates the cart overview.
+  It uses Shopify Liquid objects to display cart information dynamically
+  and can be added/customized through the Shopify Theme Editor.
+{% endcomment %}
+
+<style>
+  /* General Styles for the Cart Section */
+  .cart-overview-section-{{ section.id }} {
+    background-color: #F8F5F0; /* Updated Outer background color */
+    padding: 40px 0px; /* Provides spacing around the inner white container, adjusted for 96% width */
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #333;
+  }
+
+  .cart-content-container-{{ section.id }} {
+    background-color: #FFFFFF; /* Inner container background color */
+    max-width: 70%;
+    margin: 0 auto; /* Center the inner container */
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Optional: subtle shadow like reference */
+    position: relative; /* For positioning the modal */
+  }
+
+  .cart-content-container-{{ section.id }} h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #333;
+    text-align: left;
+  }
+
+  /* Cart Table Styles */
+  .cart-content-container-{{ section.id }} .cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+  }
+
+  .cart-content-container-{{ section.id }} .cart-table th,
+  .cart-content-container-{{ section.id }} .cart-table td {
+    padding: 15px 10px;
+    border-bottom: 1px solid #EAEAEA;
+    vertical-align: middle; /* Ensure vertical alignment for all cells */
+  }
+
+  .cart-content-container-{{ section.id }} .cart-table .cart-item__image-cell,
+  .cart-content-container-{{ section.id }} .cart-table .cart-item__details-cell {
+    text-align: left;
+  }
+   .cart-content-container-{{ section.id }} .cart-table .cart-item__line-price {
+    text-align: right;
+  }
+  .cart-content-container-{{ section.id }} .cart-table .cart-item__quantity-cell {
+    text-align: center; /* Default for desktop */
+  }
+
+
+  .cart-content-container-{{ section.id }} .cart-table tr:last-child td {
+    border-bottom: none;
+  }
+
+
+  .cart-content-container-{{ section.id }} .cart-table th {
+    font-size: 14px;
+    font-weight: bold;
+    color: #555;
+    text-transform: uppercase;
+  }
+
+  .cart-content-container-{{ section.id }} .cart-table th.product-header {
+    width: 50%;
+    text-align: left;
+  }
+  .cart-content-container-{{ section.id }} .cart-table th.quantity-header {
+    width: 25%;
+    text-align: center;
+  }
+  .cart-content-container-{{ section.id }} .cart-table th.total-header {
+    width: 25%;
+    text-align: right;
+  }
+
+  .cart-content-container-{{ section.id }} .cart-item__image-container {
+    width: 80px;
+    height: 80px;
+    margin-right: 15px;
+    border: 1px solid #EAEAEA;
+    border-radius: 4px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .cart-content-container-{{ section.id }} .cart-item__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cart-content-container-{{ section.id }} .cart-item__details {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .cart-content-container-{{ section.id }} .cart-item__name {
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+    text-decoration: none;
+  }
+
+  .cart-content-container-{{ section.id }} .cart-item__price {
+    display: block;
+    font-size: 14px;
+    color: #555;
+  }
+
+  .cart-content-container-{{ section.id }} .quantity-remove-wrapper-{{ section.id }} {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centered for desktop, will be overridden for mobile if needed */
+    margin: 0 auto; /* Centered for desktop */
+    max-width: 180px;
+  }
+
+  .cart-content-container-{{ section.id }} .quantity-selector {
+    display: flex;
+    align-items: center;
+    border: 1px solid #BFB8A8;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .cart-content-container-{{ section.id }} .quantity-selector__button {
+    background-color: #FFFFFF;
+    border: none;
+    color: #625F49;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    text-decoration: none;
+  }
+  .cart-content-container-{{ section.id }} .quantity-selector__button:hover {
+    background-color: #F7F4ED;
+    text-decoration: none;
+  }
+
+  .cart-content-container-{{ section.id }} .quantity-selector__input {
+    width: 40px;
+    text-align: center;
+    border: none;
+    border-left: 1px solid #BFB8A8;
+    border-right: 1px solid #BFB8A8;
+    padding: 8px 0;
+    font-size: 14px;
+    background-color: #FFFFFF;
+    line-height: 1;
+    -moz-appearance: textfield;
+  }
+  .cart-content-container-{{ section.id }} .quantity-selector__input::-webkit-outer-spin-button,
+  .cart-content-container-{{ section.id }} .quantity-selector__input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .cart-content-container-{{ section.id }} .remove-button {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+    margin-left: 15px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .cart-content-container-{{ section.id }} .remove-button:hover {
+    color: #333;
+  }
+
+  .cart-content-container-{{ section.id }} .cart-item__line-price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .cart-content-container-{{ section.id }} .cart-footer {
+    margin-top: 30px;
+    text-align: right;
+  }
+
+  .cart-content-container-{{ section.id }} .cart-total {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  .cart-content-container-{{ section.id }} .cart-total__label {
+    font-weight: normal;
+    margin-right: 10px;
+  }
+
+  .cart-content-container-{{ section.id }} .cart-footer__notes {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 20px;
+  }
+
+  .cart-content-container-{{ section.id }} .cart-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .cart-content-container-{{ section.id }} .checkout-button {
+    background-color: #625F49;
+    color: #FFFFFF;
+    border: none;
+    padding: 15px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .cart-content-container-{{ section.id }} .checkout-button:hover {
+    background-color: #4F4C3A;
+  }
+
+  .cart-content-container-{{ section.id }} .paypal-button {
+    background-color: #FFC439;
+    color: #003087;
+    border: 1px solid #FFC439;
+    padding: 14px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    max-width: 280px;
+  }
+  .cart-content-container-{{ section.id }} .paypal-button:hover {
+    background-color: #F0B730;
+  }
+  .cart-content-container-{{ section.id }} .paypal-button img {
+    height: 20px;
+    margin-left: 8px;
+  }
+
+  /* Custom Modal Styles */
+  .stock-error-modal__overlay-{{ section.id }} {
+    display: none; /* Hidden by default */
+    position: fixed; /* Changed to fixed to cover viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's on top */
+  }
+  .stock-error-modal__content-{{ section.id }} {
+    background-color: #fff;
+    padding: 25px 30px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    max-width: 350px;
+    width: 90%;
+  }
+  .stock-error-modal__content-{{ section.id }} p {
+    margin: 0 0 20px 0;
+    font-size: 16px;
+    color: #333;
+  }
+  .stock-error-modal__close-button-{{ section.id }} {
+    background-color: #625F49;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .stock-error-modal__close-button-{{ section.id }}:hover {
+    background-color: #4F4C3A;
+  }
+
+
+  /* Responsive Adjustments */
+  @media (max-width: 1024px) { /* Desktop small / Tablet landscape */
+    .cart-content-container-{{ section.id }} {
+      max-width: 85%;
+    }
+     .cart-overview-section-{{ section.id }} {
+      padding: 30px 10px;
+    }
+  }
+
+  @media (max-width: 768px) { /* Tablet portrait and mobile */
+    .cart-overview-section-{{ section.id }} {
+      padding: 20px 0;
+    }
+    .cart-content-container-{{ section.id }} {
+      max-width: 96%;
+      padding: 15px 10px; /* Reduced padding for container */
+      margin: 0 auto;
+    }
+    .cart-content-container-{{ section.id }} h1 {
+      font-size: 22px;
+      margin-bottom: 15px; /* Reduced margin */
+    }
+
+    .cart-content-container-{{ section.id }} .cart-table {
+        margin-bottom: 20px; /* Reduced margin */
+    }
+
+    .cart-content-container-{{ section.id }} .cart-table thead tr {
+      display: grid;
+      grid-template-columns: 1fr auto; /* Product takes remaining space, Total is auto */
+      grid-column-gap: 10px; /* Gap between headers */
+      padding: 0 5px; /* Align with item padding */
+    }
+    .cart-content-container-{{ section.id }} .cart-table th {
+        padding: 10px 0; /* Adjust header padding */
+        border-bottom: 1px solid #EAEAEA; /* Ensure header has a bottom border */
+    }
+    .cart-content-container-{{ section.id }} .cart-table th.product-header {
+        grid-column: 1 / 2;
+        text-align: left;
+        width: auto; /* Override desktop width */
+        padding-left: 0;
+    }
+    .cart-content-container-{{ section.id }} .cart-table th.quantity-header {
+        display: none;
+    }
+    .cart-content-container-{{ section.id }} .cart-table th.total-header {
+        grid-column: 2 / 3;
+        text-align: right;
+        width: auto; /* Override desktop width */
+        padding-right: 0;
+    }
+
+
+    .cart-content-container-{{ section.id }} .cart-table tr.cart-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto; /* Image | Details & Quantity | Total */
+      grid-template-rows: auto auto; /* Row for details, row for quantity */
+      grid-template-areas:
+        "image details total"
+        "image quantity total"; /* This line was the issue for quantity placement. Corrected below. */
+      grid-column-gap: 10px; /* Gap between columns */
+      align-items: start; /* Align items at the start of their grid area (top) */
+      padding: 10px 5px; /* Padding for the whole item row */
+      margin-bottom: 0; /* Remove margin, use border from td or tr */
+      border-bottom: 1px solid #EAEAEA;
+    }
+    .cart-content-container-{{ section.id }} .cart-table tr.cart-item:last-child {
+      border-bottom: none;
+    }
+
+    .cart-content-container-{{ section.id }} .cart-table td {
+      border-bottom: none;
+      padding: 0; /* Reset td padding, apply to inner elements */
+      text-align: left !important;
+      display: block; /* Ensure cells behave as blocks for grid placement */
+      vertical-align: top; /* Ensure content aligns top */
+    }
+     .cart-content-container-{{ section.id }} .cart-table td::before {
+        display: none;
+    }
+
+    .cart-content-container-{{ section.id }} .cart-item__image-cell {
+      grid-area: image;
+      padding-top: 5px; /* Align with top of text if needed */
+    }
+    .cart-content-container-{{ section.id }} .cart-item__image-container {
+      width: 100px; /* Increased image size */
+      height: 100px;
+    }
+
+    .cart-content-container-{{ section.id }} .cart-item__details-cell {
+      grid-area: details;
+      padding-top: 5px; /* Align with image top */
+    }
+    .cart-content-container-{{ section.id }} .cart-item__details {
+        display: block; /* Ensure details div takes block layout */
+    }
+    .cart-content-container-{{ section.id }} .cart-item__name {
+      font-size: 15px;
+      margin-bottom: 3px;
+    }
+    .cart-content-container-{{ section.id }} .cart-item__price {
+      font-size: 13px;
+      margin-bottom: 0; /* Remove bottom margin to bring quantity closer */
+    }
+
+    .cart-content-container-{{ section.id }} .cart-item__quantity-cell {
+      grid-area: quantity; /* This cell now contains the quantity controls */
+      padding-top: 8px !important; /* Small gap between price and quantity */
+      text-align: left !important; /* Align quantity selector left under details */
+    }
+     .cart-content-container-{{ section.id }} .quantity-remove-wrapper-{{ section.id }} {
+      justify-content: flex-start; /* Align to left */
+      margin: 0; /* Reset margin */
+    }
+
+
+    .cart-content-container-{{ section.id }} .cart-item__line-price {
+      grid-area: total;
+      text-align: right !important;
+      font-size: 16px;
+      padding-top: 5px; /* Align with top of details/image */
+    }
+
+    .cart-content-container-{{ section.id }} .cart-footer {
+      text-align: center;
+      padding-top: 20px;
+    }
+    .cart-content-container-{{ section.id }} .cart-buttons {
+      align-items: center;
+    }
+    .cart-content-container-{{ section.id }} .checkout-button,
+    .cart-content-container-{{ section.id }} .paypal-button {
+      width: 100%;
+      max-width: 320px;
+    }
+  }
+
+   @media (max-width: 480px) { /* Phone screens */
+       .cart-overview-section-{{ section.id }} {
+        padding: 15px 0;
+      }
+       .cart-content-container-{{ section.id }} {
+        padding: 15px 10px;
+        max-width: 96%;
+        border-radius: 8px;
+      }
+      .cart-content-container-{{ section.id }} .cart-item__image-container {
+        width: 90px; /* Slightly smaller for smallest screens */
+        height: 90px;
+      }
+       .cart-content-container-{{ section.id }} .cart-item__name {
+        font-size: 14px;
+       }
+       .cart-content-container-{{ section.id }} .cart-table th.product-header,
+       .cart-content-container-{{ section.id }} .cart-table th.total-header {
+          font-size: 13px;
+          padding-top: 10px;
+          padding-bottom: 10px;
+       }
+       .cart-content-container-{{ section.id }} .cart-table tr.cart-item {
+         grid-template-areas:
+            "image details total"
+            "image quantity quantity"; /* Quantity spans under details and part of total's conceptual column */
+        grid-template-rows: auto auto;
+        align-items: start;
+       }
+       .cart-content-container-{{ section.id }} .cart-item__image-cell {
+         grid-row: 1 / span 2;
+       }
+       .cart-content-container-{{ section.id }} .cart-item__details-cell {
+         grid-row: 1 / 2;
+       }
+       .cart-content-container-{{ section.id }} .cart-item__quantity-cell {
+         grid-row: 2 / 3;
+         grid-column: 2 / span 2; /* Make quantity cell span the 2nd and 3rd grid columns */
+         justify-content: flex-start;
+         padding-left: 0;
+       }
+        .cart-content-container-{{ section.id }} .cart-item__line-price {
+            grid-row: 1 / span 2;
+            align-self: start;
+        }
+   }
+</style>
+
+<div class="cart-overview-section-{{ section.id }}">
+  <div class="cart-content-container-{{ section.id }}">
+    {%- if section.settings.show_title -%}
+      {%- assign default_cart_title = 'sections.cart.title' | t -%}
+      <h1>{{ section.settings.title | default: default_cart_title }}</h1>
+    {%- endif -%}
+
+    {%- if cart.item_count > 0 -%}
+      <form action="{{ routes.cart_url }}" method="post" novalidate class="cart-form">
+        <table class="cart-table" role="table">
+          <thead role="rowgroup">
+            <tr role="row">
+              <th colspan="2" scope="col" role="columnheader" class="product-header">{{ 'sections.cart.headings.product' | t }}</th>
+              <th scope="col" role="columnheader" class="quantity-header">{{ 'sections.cart.headings.quantity' | t }}</th>
+              <th scope="col" role="columnheader" class="total-header">{{ 'sections.cart.headings.total' | t }}</th>
+            </tr>
+          </thead>
+          <tbody role="rowgroup">
+            {%- for item in cart.items -%}
+              <tr class="cart-item" role="row" data-line="{{ forloop.index }}">
+                <td role="cell" data-label="{{ 'sections.cart.headings.product' | t }}" class="cart-item__image-cell">
+                  {% if item.image %}
+                    <a href="{{ item.url }}" class="cart-item__image-container">
+                      <img class="cart-item__image"
+                           src="{{ item.image | image_url: width: 200, height: 200 }}"
+                           alt="{{ item.image.alt | escape }}"
+                           loading="lazy"
+                           width="100"
+                           height="100">
+                    </a>
+                  {% endif %}
+                </td>
+                <td role="cell" data-label="" class="cart-item__details-cell">
+                  <div class="cart-item__details">
+                    <a href="{{ item.url }}" class="cart-item__name">{{ item.product.title }}</a>
+                    {%- if item.variant.title != 'Default Title' -%}
+                      <p class="cart-item__variant">{{ item.variant.title }}</p>
+                    {%- endif -%}
+                    <span class="cart-item__price">{{ item.original_price | money }}</span>
+                    {%- if item.unit_price_measurement -%}
+                      <div class="unit-price">
+                          {{ item.unit_price | money }} /
+                          {%- if item.unit_price_measurement.reference_value != 1 -%}
+                              {{ item.unit_price_measurement.reference_value }}
+                          {%- endif -%}
+                          {{ item.unit_price_measurement.reference_unit }}
+                      </div>
+                    {%- endif -%}
+                  </div>
+                </td>
+                <td role="cell" data-label="{{ 'sections.cart.headings.quantity' | t }}" class="cart-item__quantity-cell">
+                  <div class="quantity-remove-wrapper-{{ section.id }}">
+                    <div class="quantity-selector">
+                      <a href="{{ routes.cart_change_url }}?id={{ item.key }}&amp;quantity={{ item.quantity | minus: 1 }}"
+                         class="quantity-selector__button quantity-selector__button--minus"
+                         aria-label="{{ 'general.accessibility.decrease_quantity' | t: product_name: item.product.title }}">−</a>
+                      <input class="quantity-selector__input"
+                             type="number"
+                             name="updates[{{ item.key }}]"
+                             value="{{ item.quantity }}"
+                             min="0"
+                             aria-label="{{ 'sections.cart.labels.quantity' | t }}"
+                             data-line="{{ item.key }}"
+                             id="Quantity-{{ item.key }}">
+                      <a href="{{ routes.cart_change_url }}?id={{ item.key }}&amp;quantity={{ item.quantity | plus: 1 }}"
+                         class="quantity-selector__button quantity-selector__button--plus"
+                         data-item-key="{{ item.key }}"
+                         data-current-quantity="{{ item.quantity }}"
+                         data-inventory-quantity="{{ item.variant.inventory_quantity }}"
+                         data-inventory-policy="{{ item.variant.inventory_policy }}"
+                         aria-label="{{ 'general.accessibility.increase_quantity' | t: product_name: item.product.title }}">+</a>
+                    </div>
+                    <a href="{{ routes.cart_change_url }}?id={{ item.key }}&amp;quantity=0" class="remove-button" aria-label="{{ 'sections.cart.remove_item' | t: product_name: item.product.title }}">
+                      &#128465;
+                    </a>
+                  </div>
+                </td>
+                <td role="cell" data-label="{{ 'sections.cart.headings.total' | t }}" class="cart-item__line-price">
+                  {{ item.final_line_price | money }}
+                </td>
+              </tr>
+            {%- endfor -%}
+          </tbody>
+        </table>
+
+        <div class="cart-footer">
+          <div class="cart-total">
+            <span class="cart-total__label">{{ 'sections.cart.estimated_total' | t }}:</span>
+            <span class="cart-total__price">{{ cart.total_price | money }}</span>
+          </div>
+          <p class="cart-footer__notes">
+            {% comment %}
+              Using a standard Shopify translation key for taxes and shipping note.
+              If "Translation missing" or incorrect text (like "Order special instructions") appears,
+              you MUST ensure this key exists in your theme's locale files (e.g., /locales/en.default.json)
+              with the correct translation: "Taxes included. Discounts and shipping calculated at checkout."
+
+              Example for /locales/en.default.json:
+              {
+                "cart": {
+                  "general": {
+                    "taxes_and_shipping_at_checkout": "Taxes included. Discounts and shipping calculated at checkout."
+                  }
+                }
+              }
+              Alternatively, check your theme for its specific key for this note.
+            {% endcomment %}
+            {{ 'cart.general.taxes_and_shipping_at_checkout' | t }}
+          </p>
+          <div class="cart-buttons">
+            <button type="submit" name="checkout" class="checkout-button">
+              {{ 'sections.cart.checkout' | t }}
+            </button>
+            {%- if section.settings.show_paypal_button -%}
+              <button type="button" class="paypal-button" onclick="alert('Redirect to PayPal (this is a placeholder - integrate actual PayPal functionality or use dynamic checkout buttons)')">
+                Pay with <img src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-100px.png" alt="PayPal Logo">
+              </button>
+            {%- endif -%}
+          </div>
+        </div>
+      </form>
+    {%- else -%}
+      <div class="cart--empty-message">
+        {%- if section.settings.show_title -%}
+          <h2>{{ 'sections.cart.empty' | t }}</h2>
+        {%- else -%}
+          <h2 style="margin-top: 0;">{{ 'sections.cart.empty' | t }}</h2> {%- endif -%}
+        <a href="{{ routes.all_products_collection_url }}" class="button primary-button">
+          {{ 'general.continue_shopping' | t }}
+        </a>
+      </div>
+    {%- endif -%}
+
+    {% comment %} Modal for stock error {% endcomment %}
+    <div id="stockErrorModal-{{ section.id }}" class="stock-error-modal__overlay-{{ section.id }}">
+      <div class="stock-error-modal__content-{{ section.id }}">
+        <p id="stockErrorMessage-{{ section.id }}">{{ 'sections.custom_cart.stock_error_exceeds_stock' | t: default: "The requested quantity exceeds available stock." }}</p>
+        <button id="closeStockErrorModal-{{ section.id }}" class="stock-error-modal__close-button-{{ section.id }}">{{ 'sections.custom_cart.close_button' | t: default: "Close" }}</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sectionId = '{{ section.id }}';
+    const plusButtons = document.querySelectorAll(`.quantity-selector__button--plus[data-item-key]`);
+    const modalOverlay = document.getElementById(`stockErrorModal-${sectionId}`);
+    const closeModalButton = document.getElementById(`closeStockErrorModal-${sectionId}`);
+    const stockErrorMessageElement = document.getElementById(`stockErrorMessage-${sectionId}`);
+
+    // Define default messages here, they will be overridden by translations if available
+    const defaultStockErrorMessage = "{{ 'sections.custom_cart.stock_error_exceeds_stock' | t: default: 'The requested quantity exceeds available stock.' | escape }}";
+    const defaultCloseButtonText = "{{ 'sections.custom_cart.close_button' | t: default: 'Close' | escape }}";
+
+    if (stockErrorMessageElement && stockErrorMessageElement.textContent.includes('Translation missing')) {
+        stockErrorMessageElement.textContent = defaultStockErrorMessage;
+    }
+    if (closeModalButton && closeModalButton.textContent.includes('Translation missing')) {
+        closeModalButton.textContent = defaultCloseButtonText;
+    }
+
+
+    if (!modalOverlay || !closeModalButton) {
+      console.error('Stock error modal elements not found for section ' + sectionId);
+      return;
+    }
+
+    plusButtons.forEach(button => {
+      button.addEventListener('click', function(event) {
+        const currentQuantityInCart = parseInt(this.dataset.currentQuantity, 10);
+        const inventoryQuantity = parseInt(this.dataset.inventoryQuantity, 10);
+        const inventoryPolicy = this.dataset.inventoryPolicy;
+
+        const itemKey = this.dataset.itemKey;
+        const quantityInput = document.getElementById(`Quantity-${itemKey}`);
+        let actualCurrentQuantity = currentQuantityInCart;
+
+        if (quantityInput) {
+            actualCurrentQuantity = parseInt(quantityInput.value, 10);
+        }
+
+        if (inventoryPolicy === 'deny' && (actualCurrentQuantity + 1) > inventoryQuantity) {
+          event.preventDefault();
+          if (stockErrorMessageElement && defaultStockErrorMessage) { // Ensure element and default message exist
+            stockErrorMessageElement.textContent = defaultStockErrorMessage;
+          }
+          modalOverlay.style.display = 'flex';
+        }
+      });
+    });
+
+    closeModalButton.addEventListener('click', function() {
+      modalOverlay.style.display = 'none';
+    });
+
+    modalOverlay.addEventListener('click', function(event) {
+      if (event.target === modalOverlay) {
+        modalOverlay.style.display = 'none';
+      }
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Cart Overview Section",
+  "tag": "section",
+  "class": "shopify-section--cart-overview",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show Title",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title Text",
+      "default": "Shopping Cart",
+      "info": "Only shown if 'Show Title' is checked."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_paypal_button",
+      "label": "Show PayPal Button (Static Example)",
+      "default": true,
+      "info": "This is a static example. For real PayPal payments, use Shopify's dynamic checkout buttons or a PayPal app."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cart Overview Section",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

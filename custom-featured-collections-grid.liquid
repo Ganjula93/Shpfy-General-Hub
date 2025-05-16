@@ -2,10 +2,10 @@
 
 <div class="page-width featured-collections-container{% if section.settings.main_title == blank and section.settings.subtitle == blank %} featured-collections-container--no-header{% endif %}">
   {% if section.settings.main_title != blank %}
-    <h2 class="featured-collections__main-title animate-on-scroll">{{ section.settings.main_title | escape }}</h2>
+    <h2 class="featured-collections__main-title">{{ section.settings.main_title | escape }}</h2>
   {% endif %}
   {% if section.settings.subtitle != blank %}
-    <div class="featured-collections__subtitle animate-on-scroll">{{ section.settings.subtitle }}</div>
+    <div class="featured-collections__subtitle">{{ section.settings.subtitle }}</div>
   {% endif %}
 
   {% if section.blocks.size > 0 %}
@@ -16,7 +16,7 @@
         {%- assign item_title = block.settings.display_title -%}
         {%- assign default_alt_text = item_title | default: collection_to_link.title | escape -%}
 
-        <div class="featured-collection-item animate-on-scroll" {{ block.shopify_attributes }}>
+        <div class="featured-collection-item" {{ block.shopify_attributes }}>
           <div class="featured-collection-item__image-wrapper">
             {% if display_image != blank %}
               {{ display_image | image_url: width: 500 | image_tag:
@@ -66,75 +66,10 @@
   {% else %}
     {% if section.settings.main_title != blank or section.settings.subtitle != blank %}
       <div class="featured-collections__grid--empty">
-        <p>{{ 'onboarding.no_content' | t }}</p>
-      </div>
+        <p>{{ 'onboarding.no_content' | t }}</p> </div>
     {% endif %}
   {% endif %}
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  if (!('IntersectionObserver' in window)) {
-    const elementsToAnimateFallback = document.querySelectorAll(
-      '#shopify-section-{{ section.id }} .animate-on-scroll' // General selector for all animatable elements
-    );
-    elementsToAnimateFallback.forEach(el => {
-      if (el) {
-        // el.classList.add('animate-on-scroll'); // Should already have this if JS is modifying it
-        el.classList.add('is-visible'); // Make it visible directly
-      }
-    });
-    return;
-  }
-
-  const sectionId = '{{ section.id }}';
-  const sectionElement = document.getElementById('shopify-section-' + sectionId);
-
-  if (!sectionElement) {
-    return;
-  }
-
-  // Select all elements marked with .animate-on-scroll within this section
-  const elementsToAnimate = sectionElement.querySelectorAll('.animate-on-scroll');
-
-  if (elementsToAnimate.length === 0) {
-    return;
-  }
-
-  const observerOptions = {
-    root: null,
-    rootMargin: '0px 0px -50px 0px',
-    threshold: 0.1
-  };
-
-  const observerCallback = (entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const target = entry.target;
-        let delay = 0;
-
-        if (target.classList.contains('featured-collections__subtitle')) {
-          delay = 100; // Subtitle after title (title gets 0 from CSS)
-        } else if (target.classList.contains('featured-collection-item')) {
-          // Find its index among other grid items only for staggered delay
-          const gridItemsOnly = Array.from(sectionElement.querySelectorAll('.featured-collection-item.animate-on-scroll'));
-          const itemIndex = gridItemsOnly.indexOf(target);
-          // Start stagger after title and subtitle might have animated
-          // e.g., if title is 0ms, subtitle 100ms, items start at 200ms
-          delay = 200 + (itemIndex * 100);
-        }
-
-        target.style.transitionDelay = `${delay}ms`;
-        target.classList.add('is-visible');
-        observer.unobserve(target);
-      }
-    });
-  };
-
-  const animationObserver = new IntersectionObserver(observerCallback, observerOptions);
-  elementsToAnimate.forEach(el => animationObserver.observe(el));
-});
-</script>
 
 {% schema %}
 {

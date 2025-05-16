@@ -3,7 +3,7 @@
   Description: Displays a collection of products, using a SwiperJS carousel.
                Shows 1 product per slide on mobile, and 3 on tablet/desktop.
                Uses dynamic pagination bullets.
-  Version: 2.8 (Locales block removed, hardcoded English strings in schema)
+  Version: 2.7 (Corrected schema locale paths)
 
   Dependencies:
   - section-custom-bestsellers.css (section-specific CSS)
@@ -288,47 +288,70 @@
   "settings": [
     {
       "type": "header",
-      "content": "Section Titles"
+      "content": "t:settings.header_titles.content"
     },
     {
       "type": "text",
       "id": "headline",
-      "label": "Headline",
+      "label": "t:settings.headline.label",
       "default": "Loved by You"
     },
     {
       "type": "richtext",
       "id": "subline",
-      "label": "Subline",
+      "label": "t:settings.subline.label",
       "default": "<p>These favorites don’t stay in stock for long</p>"
     },
     {
       "type": "header",
-      "content": "Product Source"
+      "content": "t:settings.header_product_source.content"
     },
     {
       "type": "collection",
       "id": "products_collection",
-      "label": "Select Collection"
+      "label": "t:settings.products_collection.label"
     },
     {
       "type": "select",
       "id": "image_aspect_ratio",
-      "label": "Image Aspect Ratio",
+      "label": "t:settings.image_aspect_ratio.label",
       "options": [
-        { "value": "square", "label": "Square (1:1)" },
-        { "value": "portrait", "label": "Portrait (e.g., 3:3.5 or 2:3)" },
-        { "value": "landscape", "label": "Landscape (e.g., 4:3 or 16:9)" }
+        { "value": "square", "label": "t:settings.image_aspect_ratio.options.square.label" },
+        { "value": "portrait", "label": "t:settings.image_aspect_ratio.options.portrait.label" },
+        { "value": "landscape", "label": "t:settings.image_aspect_ratio.options.landscape.label" }
       ],
       "default": "portrait",
-      "info": "Helps maintain consistent image heights. Choose based on your typical product imagery."
+      "info": "t:settings.image_aspect_ratio.info"
     }
   ],
   "presets": [
     {
-      "name": "Custom Bestsellers"
+      "name": "t:presets.name"
     }
-  ]
-  /* "locales" block completely removed */
+  ],
+  "locales": {
+    "en": {
+      "settings": {
+        "header_titles": { "content": "Section Titles" },
+        "headline": { "label": "Headline" },
+        "subline": { "label": "Subline" },
+        "header_product_source": { "content": "Product Source" },
+        "products_collection": { "label": "Select Collection" },
+        "image_aspect_ratio": {
+          "label": "Image Aspect Ratio",
+          "options": {
+            "square": { "label": "Square (1:1)" },
+            "portrait": { "label": "Portrait (e.g., 3:3.5 or 2:3)" },
+            "landscape": { "label": "Landscape (e.g., 4:3 or 16:9)" }
+          },
+          "info": "Helps maintain consistent image heights. Choose based on your typical product imagery."
+        }
+      },
+      "presets": {
+        "name": "Custom Bestsellers"
+      }
+    }
+    /* German ("de") locales removed */
+  }
 }
 {% endschema %}

@@ -1,0 +1,287 @@
+{% comment %}
+  Shopify Section: Hero Image with Text and Button
+
+  This section displays a full-width hero image with an optional overlay,
+  a customizable heading, and a customizable call-to-action button.
+{% endcomment %}
+
+{%- liquid
+  assign section_id = 'hero-section-' | append: section.id
+  assign bg_image = section.settings.background_image
+  assign overlay_opacity = section.settings.overlay_opacity | divided_by: 100.0
+
+  assign heading_text = section.settings.heading_text
+  assign text_color = section.settings.text_color
+  assign heading_padding_top = section.settings.heading_padding_top
+  assign heading_font_size = section.settings.heading_font_size
+  assign heading_font_size_mobile = section.settings.heading_font_size_mobile
+
+
+  assign button_text = section.settings.button_text
+  assign button_link = section.settings.button_link
+  assign button_font_size = section.settings.button_font_size
+  assign button_bg_color = section.settings.button_bg_color
+  assign button_text_color = section.settings.button_text_color
+  assign button_border_color = section.settings.button_border_color
+
+  assign button_text_color_hover = section.settings.button_text_color_hover
+  assign button_bg_color_hover = section.settings.button_bg_color_hover
+  assign button_border_color_hover = section.settings.button_border_color_hover
+-%}
+
+<style>
+  #{{ section_id }} .hero__image-wrapper {
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    min-height: 400px; /* Default min-height, can be adjusted */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 20px; /* Vertical and horizontal padding */
+  }
+
+  {% if bg_image != blank %}
+    #{{ section_id }} .hero__image-wrapper {
+      background-image: url('{{ bg_image | image_url: width: 2000 }}');
+    }
+  {% else %}
+    #{{ section_id }} .hero__image-wrapper {
+      background-color: #f0f0f0; /* Fallback background if no image */
+    }
+  {% endif %}
+
+  #{{ section_id }} .hero__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000000; /* Overlay color, typically black */
+    opacity: {{ overlay_opacity }};
+    z-index: 1;
+  }
+
+  #{{ section_id }} .hero__content {
+    position: relative;
+    z-index: 2; /* Ensures content is above the overlay */
+    max-width: 700px; /* Max width for content for readability */
+    margin: 0 auto; /* Center the content block */
+  }
+
+  #{{ section_id }} .hero__heading {
+    font-size: {{ heading_font_size }}rem; /* Customizable heading font size */
+    font-weight: bold;
+    margin-bottom: 20px;
+    line-height: 1.2;
+    color: {{ text_color }}; /* Explicitly set heading color */
+    padding-top: {{ heading_padding_top }}px; /* Customizable top padding */
+  }
+
+  #{{ section_id }} .hero__button {
+    display: inline-block;
+    padding: 12px 24px;
+    text-decoration: none;
+    font-size: {{ button_font_size }}rem; /* Customizable button font size */
+    border-radius: 5px; /* Rounded corners for the button */
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    background-color: {{ button_bg_color }};
+    color: {{ button_text_color }};
+    border: 2px solid {{ button_border_color }};
+    cursor: pointer;
+  }
+
+  #{{ section_id }} .hero__button:hover {
+    background-color: {{ button_bg_color_hover }};
+    color: {{ button_text_color_hover }};
+    border-color: {{ button_border_color_hover }};
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    #{{ section_id }} .hero__heading {
+      font-size: {{ heading_font_size_mobile }}rem; /* Customizable mobile heading font size */
+    }
+    /* You might want to add a mobile button font size option too if needed */
+    /* #{{ section_id }} .hero__button {
+      font-size: {{ button_font_size | minus: 0.2 }}rem; /* Slightly smaller button text on mobile */
+    /* } */
+  }
+</style>
+
+<div id="{{ section_id }}" class="hero-section">
+  <div class="hero__image-wrapper">
+    {% if overlay_opacity > 0 %}
+      <div class="hero__overlay"></div>
+    {% endif %}
+    <div class="hero__content">
+      {% if heading_text != blank %}
+        <h2 class="hero__heading">{{ heading_text | escape }}</h2>
+      {% endif %}
+      {% if button_text != blank and button_link != blank %}
+        <a href="{{ button_link }}" class="hero__button">
+          {{ button_text | escape }}
+        </a>
+      {% elsif button_text != blank %}
+        <span class="hero__button">
+            {{ button_text | escape }}
+        </span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Cart-Hero",
+  "tag": "section",
+  "class": "shopify-section-hero-image",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image",
+      "info": "Choose the main image for the hero section."
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Background Image Overlay Opacity",
+      "default": 30,
+      "info": "Set the darkness of the overlay. 0% is no overlay, 100% is fully black."
+    },
+    {
+      "type": "header",
+      "content": "Heading Settings"
+    },
+    {
+      "type": "text",
+      "id": "heading_text",
+      "label": "Heading",
+      "default": "Your Shopping Cart",
+      "info": "The main text displayed on the hero image."
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading Text Color",
+      "default": "#FFFFFF",
+      "info": "Color for the heading text."
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "min": 1,
+      "max": 6,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Heading Font Size (Desktop)",
+      "default": 2.5,
+      "info": "Adjust the size of the heading text for larger screens."
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_mobile",
+      "min": 1,
+      "max": 4,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Heading Font Size (Mobile)",
+      "default": 2,
+      "info": "Adjust the size of the heading text for smaller screens (max 768px width)."
+    },
+    {
+      "type": "range",
+      "id": "heading_padding_top",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Heading Top Padding",
+      "default": 0,
+      "info": "Adjusts the space above the heading text."
+    },
+    {
+      "type": "header",
+      "content": "Button Settings"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Continue Shopping",
+      "info": "Text for the call-to-action button."
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link",
+      "info": "Where the button will take the user. Leave blank if no link needed."
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "min": 0.5,
+      "max": 2.5,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Button Font Size",
+      "default": 1,
+      "info": "Adjust the size of the button text."
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Button Background Color",
+      "default": "rgba(0,0,0,0)",
+      "info": "Background color of the button. Use 'rgba(0,0,0,0)' for transparent."
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#FFFFFF",
+      "info": "Text color of the button."
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Button Border Color",
+      "default": "#FFFFFF",
+      "info": "Border color of the button."
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color_hover",
+      "label": "Button Background Color (Hover)",
+      "default": "#FFFFFF",
+      "info": "Background color of the button on hover."
+    },
+    {
+      "type": "color",
+      "id": "button_text_color_hover",
+      "label": "Button Text Color (Hover)",
+      "default": "#000000",
+      "info": "Text color of the button on hover."
+    },
+    {
+      "type": "color",
+      "id": "button_border_color_hover",
+      "label": "Button Border Color (Hover)",
+      "default": "#FFFFFF",
+      "info": "Border color of the button on hover."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cart-Hero",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}

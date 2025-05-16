@@ -67,6 +67,8 @@
     flex-direction: column;
     justify-content: center;
     min-height: 100px; 
+    padding-left: 20px; 
+    padding-right: 20px; 
   }
 
   .subscribe-form-content {
@@ -239,26 +241,41 @@
       gap: 20px;
     }
     .email-subscribe-section h2 {
-        font-size: {{ section.settings.subscribe_heading_font_size_tablet | default: '2.0em' }};
+        font-size: {{ section.settings.subscribe_heading_font_size_tablet | default: '2.2em' }};
     }
-    .subscribe-text-content { text-align: center; flex-basis: auto; min-height: auto; } 
-    .subscribe-form-content { text-align: center; flex-basis: auto; width: 100%; max-width: 400px; min-height: auto; align-items: center;} 
+    .subscribe-text-content { 
+      text-align: center; 
+      flex-basis: auto; 
+      min-height: auto; 
+      padding-left: 15px; /* Adjusted padding for tablet stacked view */
+      padding-right: 15px; /* Adjusted padding for tablet stacked view */
+    } 
+    .subscribe-form-content { 
+      text-align: center; 
+      flex-basis: auto; 
+      width: 100%; 
+      max-width: 400px; 
+      min-height: auto; 
+      align-items: center;
+      padding-left: 15px; /* Adjusted padding for tablet stacked view */
+      padding-right: 15px; /* Adjusted padding for tablet stacked view */
+    } 
     .newsletter-form { justify-content: center; align-items: center; }
-    .email-input-label { text-align: center; font-size: 0.8em; } 
-    .newsletter-form__input { font-size: 0.85em; }
+    .email-input-label { text-align: center; font-size: 1em; } 
+    .newsletter-form__input { font-size: 1em; } 
 
     .footer-grid-container {
       flex-direction: column; 
       flex-wrap: wrap; 
       max-width: 90%;
-      gap: {{ section.settings.footer_column_gap_mobile | default: '25px' }};
+      gap: {{ section.settings.footer_column_gap_mobile | default: '30px' }}; 
     }
      .footer-column { text-align: center; } 
      .footer-column .logo-image { display: block; margin-left: auto; margin-right: auto; } 
      .social-icons { justify-content: center; }
-     .footer-column-title { font-size: 1.1em; }
-     .social-icons-heading { text-align: center; font-size: 1em; }
-     .footer-column p, .footer-column ul li a { font-size: 0.85em; }
+     .footer-column-title { font-size: 1.3em; } 
+     .social-icons-heading { text-align: center; font-size: 1.2em; } 
+     .footer-column p, .footer-column ul li a { font-size: 1em; } 
      .footer-column ul { padding-left: 0; } 
   }
 
@@ -268,47 +285,51 @@
     }
     .email-subscribe-section {
       position: relative;
-      /* margin-left: auto; /* Removed for transform centering */
-      /* margin-right: auto; /* Removed for transform centering */
-      left: 50%; /* Added for centering with transform */
-      transform: translateX(-50%); /* Added for centering */
+      width: 80%; 
+      left: 50%; 
+      transform: translateX(-50%); 
       top: -30px; 
       margin-bottom: -15px; 
       padding: 25px 15px; 
       z-index: 5;
+      margin-left: 0; 
+      margin-right: 0; 
     }
-     .email-subscribe-section .container-flex { 
-       gap: 15px; 
-       padding-left: 32px;
-       padding-right: 32px;
-       text-align: center; 
-     } 
+     .email-subscribe-section .container-flex { gap: 15px; text-align: center; } 
      .subscribe-text-content, .subscribe-form-content { text-align: center; align-items: center; } 
+     .subscribe-text-content { 
+        padding-left: 20px; /* Added padding */
+        padding-right: 20px; /* Added padding */
+     } 
+     .subscribe-form-content {
+        padding-left: 10px; /* Padding for the form area on mobile */
+        padding-right: 10px;
+     }
+
 
      .email-subscribe-section h2 {
-        font-size: {{ section.settings.subscribe_heading_font_size_mobile | default: '1.6em' }};
+        font-size: {{ section.settings.subscribe_heading_font_size_mobile | default: '1.9em' }}; 
      }
-     .email-subscribe-section p.subscribe-subheading { font-size: 0.8em; }
-     .email-input-label { text-align: center; margin-bottom:8px; font-size: 0.75em; }
+     .email-subscribe-section p.subscribe-subheading { font-size: 1em; } 
+     .email-input-label { text-align: center; margin-bottom:8px; font-size: 0.95em; } 
      .newsletter-form__field-wrapper { padding: 4px 4px 4px 0px; }
-     .newsletter-form__input { font-size: 0.8em; }
-
+     .newsletter-form__input { font-size: 1em; } 
 
     .main-footer-section {
       padding-top: 40px; 
-      padding-bottom: {{ section.settings.main_footer_bottom_padding_mobile | default: '70px' }}; 
+      padding-bottom: {{ section.settings.main_footer_bottom_padding_mobile | default: '80px' }}; 
       z-index: 2;
     }
     .footer-grid-container {
       max-width: 90%; 
-      gap: {{ section.settings.footer_column_gap_mobile | default: '20px' }};
+      gap: {{ section.settings.footer_column_gap_mobile | default: '25px' }}; 
     }
-    .footer-column { margin-bottom: 15px; padding: 0; min-width: 0; text-align: center; } 
-    .footer-column .logo-text-heading { font-size: 1.8em; }
-    .footer-column .logo-subtext { font-size: 0.6em; }
-    .footer-column-title { font-size: 1em; margin-bottom: 12px; }
-    .social-icons-heading { text-align: center; font-size: 1em; margin-bottom: 8px; }
-    .footer-column p, .footer-column ul li a { font-size: 0.8em; line-height: 1.5; }
+    .footer-column { margin-bottom: 20px; padding: 0; min-width: 0; text-align: center; } 
+    .footer-column .logo-text-heading { font-size: 2.2em; } 
+    .footer-column .logo-subtext { font-size: 0.8em; } 
+    .footer-column-title { font-size: 1.2em; margin-bottom: 15px; } 
+    .social-icons-heading { text-align: center; font-size: 1.2em; margin-bottom: 10px; } 
+    .footer-column p, .footer-column ul li a { font-size: 1em; line-height: 1.6; } 
     .social-icons { justify-content: center; }
   }
 
@@ -321,27 +342,34 @@
       padding: 20px 10px;
       top: -25px;
       margin-bottom: -10px;
-      /* Centering for relative position with transform should still apply from 768px breakpoint */
     }
+    .subscribe-text-content { 
+        padding-left: 15px; /* Adjusted for smaller mobile */
+        padding-right: 15px; 
+     } 
+     .subscribe-form-content {
+        padding-left: 5px; 
+        padding-right: 5px;
+     }
     .email-subscribe-section h2 {
-        font-size: {{ section.settings.subscribe_heading_font_size_mobile | default: '1.4em' }};
+        font-size: {{ section.settings.subscribe_heading_font_size_mobile | default: '1.7em' }}; 
     }
-    .email-subscribe-section p.subscribe-subheading { font-size: 0.75em; }
-    .email-input-label { font-size: 0.7em; }
+    .email-subscribe-section p.subscribe-subheading { font-size: 0.95em; } 
+    .email-input-label { font-size: 0.9em; } 
     .newsletter-form__field-wrapper { padding: 3px 3px 3px 0px; }
-    .newsletter-form__input { font-size: 0.75em; }
+    .newsletter-form__input { font-size: 0.95em; } 
     .newsletter-form__button svg { width: 18px; height: 18px; }
 
 
     .main-footer-section {
         padding-top: 30px;
-        padding-bottom: {{ section.settings.main_footer_bottom_padding_mobile | default: '60px' }}px;
+        padding-bottom: {{ section.settings.main_footer_bottom_padding_mobile | default: '70px' }};
     }
     .footer-grid-container { max-width: 95%; gap: 15px; }
-    .footer-column .logo-text-heading { font-size: 1.6em; }
-    .footer-column-title { font-size: 0.9em; }
-    .social-icons-heading { font-size: 0.9em; }
-    .footer-column p, .footer-column ul li a { font-size: 0.75em; }
+    .footer-column .logo-text-heading { font-size: 2em; } 
+    .footer-column-title { font-size: 1.1em; } 
+    .social-icons-heading { font-size: 1.1em; } 
+    .footer-column p, .footer-column ul li a { font-size: 0.95em; } 
   }
 </style>
 {% comment %} --------- END: CSS Styles for the Footer --------- {% endcomment %}
@@ -554,14 +582,14 @@
     {
       "type": "text",
       "id": "subscribe_heading_font_size_tablet",
-      "label": "Heading Font Size (Tablet, e.g., 2.0em)",
-      "default": "2.0em"
+      "label": "Heading Font Size (Tablet, e.g., 2.2em)", 
+      "default": "2.2em"
     },
     {
       "type": "text",
       "id": "subscribe_heading_font_size_mobile",
-      "label": "Heading Font Size (Mobile, e.g., 1.6em)",
-      "default": "1.6em"
+      "label": "Heading Font Size (Mobile, e.g., 1.9em)", 
+      "default": "1.9em"
     },
     { "type": "select", "id": "subscribe_heading_font_weight", "label": "Heading Font Weight", "options": [{"value": "300","label": "Light"},{"value": "normal","label": "Normal (400)"},{"value": "500","label": "Medium"},{"value": "600","label": "Semi-Bold"},{"value": "bold","label": "Bold (700)"},{"value": "800","label": "Extra-Bold"}], "default": "bold" },
     { "type": "color", "id": "subscribe_heading_color", "label": "Heading Text Color", "default": "#4A4A4A" },
@@ -619,8 +647,8 @@
     {
       "type": "text",
       "id": "main_footer_bottom_padding_mobile",
-      "label": "Bottom Padding (Mobile, e.g., 70px)",
-      "default": "70px"
+      "label": "Bottom Padding (Mobile, e.g., 80px)", 
+      "default": "80px"
     },
     {
       "type": "text",
